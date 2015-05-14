@@ -32,10 +32,22 @@ namespace AndroidFundamentals
 
             callButton.Click += (sender, args) =>
             {
-                var callIntent = new Intent(Intent.ActionCall);
-                callIntent.SetData(Android.Net.Uri.Parse("tel:" + phoneNumber));
-                StartActivity(callIntent);
+                var dialog = new AlertDialog.Builder(this);
+
+                dialog.SetTitle("Title");
+                dialog.SetMessage("Message Goes Here");
+
+                dialog.SetNegativeButton("No", (o, e) => { });
+                dialog.SetNeutralButton("Maybe", (o, e) => { });
+                dialog.SetPositiveButton("Yes", (o, e) => { });
+
+                dialog.Show();
+                //var callIntent = new Intent(Intent.ActionCall);
+                //callIntent.SetData(Android.Net.Uri.Parse("tel:" + phoneNumber));
+                //StartActivity(callIntent);
             };
+
+
         }
     }
 }

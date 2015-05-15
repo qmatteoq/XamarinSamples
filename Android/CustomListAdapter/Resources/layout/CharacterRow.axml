@@ -21,4 +21,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingLeft="5dp" />
+    <TextView
+        android:id="@+id/specialtyTextView"
+        android:layout_toRightOf="@id/photoImageView"
+        android:layout_below="@id/nameTextView"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp" />
 </RelativeLayout>

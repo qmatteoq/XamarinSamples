@@ -60,14 +60,17 @@ namespace CustomListAdapter
 		public partial class Id
 		{
 			
-			// aapt resource value: 0x7f050002
-			public const int Comics = 2131034114;
+			// aapt resource value: 0x7f050003
+			public const int Comics = 2131034115;
 			
 			// aapt resource value: 0x7f050001
 			public const int nameTextView = 2131034113;
 			
 			// aapt resource value: 0x7f050000
 			public const int photoImageView = 2131034112;
+			
+			// aapt resource value: 0x7f050002
+			public const int specialtyTextView = 2131034114;
 			
 			static Id()
 			{

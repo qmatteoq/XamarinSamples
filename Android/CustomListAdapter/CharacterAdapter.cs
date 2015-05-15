@@ -60,6 +60,7 @@ namespace CustomListAdapter
 
             var photo = view.FindViewById<ImageView>(Resource.Id.photoImageView);
             var name = view.FindViewById<TextView>(Resource.Id.nameTextView);
+            var description = view.FindViewById<TextView>(Resource.Id.specialtyTextView);
 
             if (this.characters[position].Thumbnail != null)
             {
@@ -67,6 +68,14 @@ namespace CustomListAdapter
             }
 
             name.Text = this.characters[position].Name;
+
+            string text = this.characters[position].Description;
+            if (text.Length > 50)
+            {
+                text = text.Substring(0, 50) + "...";
+            }
+
+            description.Text = text;
 
             return view;
         }

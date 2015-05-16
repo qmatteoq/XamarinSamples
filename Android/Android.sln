@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ListAdapters", "ListAdapter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomListAdapter", "CustomListAdapter\CustomListAdapter.csproj", "{B46ABE1B-E37D-439C-8F1B-08BEB987E724}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ActivityState", "ActivityState\ActivityState.csproj", "{5FA7C324-2318-4566-BD39-DEF2A7F29015}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -93,6 +95,30 @@ Global
 		{B46ABE1B-E37D-439C-8F1B-08BEB987E724}.Release|x86.ActiveCfg = Release|Any CPU
 		{B46ABE1B-E37D-439C-8F1B-08BEB987E724}.Release|x86.Build.0 = Release|Any CPU
 		{B46ABE1B-E37D-439C-8F1B-08BEB987E724}.Release|x86.Deploy.0 = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|ARM.Build.0 = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|ARM.Deploy.0 = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|x64.Build.0 = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|x64.Deploy.0 = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|x86.Build.0 = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Debug|x86.Deploy.0 = Debug|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|ARM.ActiveCfg = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|ARM.Build.0 = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|ARM.Deploy.0 = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|x64.ActiveCfg = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|x64.Build.0 = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|x64.Deploy.0 = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|x86.ActiveCfg = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|x86.Build.0 = Release|Any CPU
+		{5FA7C324-2318-4566-BD39-DEF2A7F29015}.Release|x86.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

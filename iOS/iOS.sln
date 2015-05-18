@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StoryboardDemo", "Storyboar
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedStoryboard", "AdvancedStoryboard\AdvancedStoryboard.csproj", "{21C72A9D-06BD-41E2-8FFC-3BA855C65B0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TableViewSample", "TableViewSample\TableViewSample.csproj", "{6FCF63C0-2E27-471F-965B-E36AEE20B877}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Ad-Hoc|iPhone = Ad-Hoc|iPhone
@@ -51,6 +53,22 @@ Global
 		{21C72A9D-06BD-41E2-8FFC-3BA855C65B0A}.Release|iPhone.Build.0 = Release|iPhone
 		{21C72A9D-06BD-41E2-8FFC-3BA855C65B0A}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{21C72A9D-06BD-41E2-8FFC-3BA855C65B0A}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Ad-Hoc|iPhone.ActiveCfg = Ad-Hoc|iPhone
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Ad-Hoc|iPhone.Build.0 = Ad-Hoc|iPhone
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Ad-Hoc|iPhoneSimulator.ActiveCfg = Ad-Hoc|iPhoneSimulator
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Ad-Hoc|iPhoneSimulator.Build.0 = Ad-Hoc|iPhoneSimulator
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.AppStore|iPhone.ActiveCfg = AppStore|iPhone
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.AppStore|iPhone.Build.0 = AppStore|iPhone
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.AppStore|iPhoneSimulator.ActiveCfg = AppStore|iPhoneSimulator
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.AppStore|iPhoneSimulator.Build.0 = AppStore|iPhoneSimulator
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Debug|iPhone.Build.0 = Debug|iPhone
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Release|iPhone.ActiveCfg = Release|iPhone
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Release|iPhone.Build.0 = Release|iPhone
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{6FCF63C0-2E27-471F-965B-E36AEE20B877}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

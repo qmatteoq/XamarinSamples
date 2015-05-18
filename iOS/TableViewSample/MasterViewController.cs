@@ -28,7 +28,7 @@ namespace TableViewSample
             base.ViewDidLoad();
 
             items = new string[] { "Captain America", "Spiderman", "Iron Man", "Thor", "Hulk" };
-            TableView.Source = new TableViewSource(items,this);
+            TableView.Source = new TableViewSource(items);
         }
 
         public override void PrepareForSegue(UIStoryboardSegue segue, NSObject sender)

@@ -2,14 +2,17 @@ using System;
 using Foundation;
 using UIKit;
 
-namespace TableViewSample
+namespace TableViewSingleSelection
 {
     public class TableViewSource: UITableViewSource
     {
         string[] tableItems;
         static readonly NSString CellIdentifier = new NSString("Cell");
-        public TableViewSource(string[] items)
+        private RootViewController _parent;
+
+        public TableViewSource(string[] items, RootViewController parent)
         {
+            _parent = parent;
             this.tableItems = items;
         }
 
@@ -27,5 +30,13 @@ namespace TableViewSample
             return tableItems.Length;
         }
 
+        public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+        {
+            UIAlertController alertController = UIAlertController.Create("Item selected", tableItems[indexPath.Row], UIAlertControllerStyle.Alert);
+            UIAlertAction action = UIAlertAction.Create("Ok", UIAlertActionStyle.Default, null);
+            alertController.AddAction(action);
+
+            this._parent.PresentViewController(alertController, true, null);
+        }
     }
 }

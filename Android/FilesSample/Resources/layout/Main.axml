@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/textToSave" />
+    <Button
+        android:id="@+id/WriteFilebutton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/WriteFile" />
+    <Button
+        android:id="@+id/ReadFileButton"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/ReadFile" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/savedText" />
+</LinearLayout>

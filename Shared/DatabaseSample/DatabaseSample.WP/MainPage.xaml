@@ -1,0 +1,33 @@
+﻿<Page
+    x:Class="DatabaseSample.WP.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:DatabaseSample.WP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Margin="19, 0, 0, 0">
+        <StackPanel>
+            <TextBlock Text="Name" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBox x:Name="UserName" />
+            <TextBlock Text="Surname" Style="{StaticResource TitleTextBlockStyle}" />
+            <TextBox x:Name="UserSurname" />
+            <Button Content="Add" Click="OnAddItemClicked" />
+            <Button Content="Get items" Click="OnGetItemsClicked" />
+            <ListView x:Name="PeopleList">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Path=Name}" Style="{StaticResource BodyTextBlockStyle}" />
+                            <TextBlock Text="{Binding Path=Surname}" Style="{StaticResource BodyTextBlockStyle}" 
+                                       Margin="10, 0, 0, 0" />
+                        </StackPanel>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
+        </StackPanel>
+        
+    </Grid>
+</Page>

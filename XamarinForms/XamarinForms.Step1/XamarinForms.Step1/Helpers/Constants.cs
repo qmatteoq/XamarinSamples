@@ -1,4 +1,4 @@
-﻿namespace Marvelpedia.XamarinForms.Helpers
+﻿namespace XamarinForms.Step1.Helpers
 {
     public static class Constants
     {

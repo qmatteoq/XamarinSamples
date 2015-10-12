@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Marvelpedia.XamarinForms.Helpers;
 using MarvelPortable;
 using MarvelPortable.Model;
 using Xamarin.Forms;
+using XamarinForms.Step1.Helpers;
 
 namespace XamarinForms.Step1.Views
 {

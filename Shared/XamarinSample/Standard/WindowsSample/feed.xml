@@ -1,0 +1,1688 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" media="screen" href="/~d/styles/rss2full.xsl"?><?xml-stylesheet type="text/css" media="screen" href="http://feeds.feedburner.com/~d/styles/itemcontent.css"?><rss xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:wfw="http://wellformedweb.org/CommentAPI/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:sy="http://purl.org/rss/1.0/modules/syndication/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/" xmlns:feedburner="http://rssnamespace.org/feedburner/ext/1.0" version="2.0">
+
+<channel>
+	<title>qmatteoq.com</title>
+	
+	<link>http://wp.qmatteoq.com</link>
+	<description>Windows Phone, Windows 8 and much more</description>
+	<lastBuildDate>Mon, 05 Oct 2015 20:14:10 +0000</lastBuildDate>
+	<language>en-US</language>
+	<sy:updatePeriod>hourly</sy:updatePeriod>
+	<sy:updateFrequency>1</sy:updateFrequency>
+	<generator>http://wordpress.org/?v=4.2.5</generator>
+	<atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="self" type="application/rss+xml" href="http://feeds.feedburner.com/qmatteoq_eng" /><feedburner:info uri="qmatteoq_eng" /><atom10:link xmlns:atom10="http://www.w3.org/2005/Atom" rel="hub" href="http://pubsubhubbub.appspot.com/" /><item>
+		<title>Template10: a new template to create Universal Windows apps – MVVM</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/g2JA_yI0Yik/</link>
+		<comments>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-mvvm/#comments</comments>
+		<pubDate>Mon, 05 Oct 2015 15:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[Universal Apps]]></category>
+		<category><![CDATA[wpdev]]></category>
+		<category><![CDATA[Template10]]></category>
+		<category><![CDATA[Windows 10]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6465</guid>
+		<description><![CDATA[The Model-View-ViewModel pattern (from now on, just MVVM) is, without any doubt, the most widely used pattern when it comes to develop XAML based applications. In this post, we won’t learn all the inner details of the pattern: I’ve already talked about it many times in this blog, when I presented some of the most [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>The Model-View-ViewModel pattern (from now on, just MVVM) is, without any doubt, the most widely used pattern when it comes to develop XAML based applications. In this post, we won’t learn all the inner details of the pattern: I’ve already talked about it many times in this blog, when I presented some of the most popular MVVM frameworks like <a href="http://wp.qmatteoq.com/tag/caliburn/" target="_blank">Caliburn Micro</a> and <a href="http://wp.qmatteoq.com/tag/prism/" target="_blank">Prism</a>.&nbsp; The goal of the MVVM pattern is to improve testability and maintainability of an application, since it helps the developer in reaching one of the key goals that drives any complex development project: keeping the different layers separated, so that the code that handles the user interface doesn’t mix with the one that handles the business logic (like retrieving the data from the cloud or from a database).
+<p>The MVVM pattern is heavily used in the Universal Windows app world and, generally speaking, also in all the XAML based technologies, since it relies on the basic XAML feature like binding, dependency properties, the <strong>INotifyPropertyChanged </strong>interface, etc. When you use this pattern, you typically split the project into three components:
+<ol>
+<li>The <strong>model</strong>, which are the entities and the services that are used to handle the raw data of the application, without dependencies on how they are presented.
+<li>The <strong>view</strong>, which is the user interface presented to the user. In Universal Windows apps, the Views are identified with the XAML pages.
+<li>The <strong>ViewModel</strong>, which is the connection between the view and the model. ViewModel are simple classes that takes care of retrieving the data handled by the model and of preparing them to be presented by the View using binding.</li>
+</ol>
+<p>The MVVM pattern gives to developers a lot of benefits but, however, it requires some time to be configured into a new project: the problem is that when you create a new Universal Windows app there are a lot of scenarios (navigation, the application’s lifecycle, contracts, etc.) which are simple to implement when you use code-behind, but that need to be reviewed when you use the MVVM pattern, since most of the code is written in a ViewModel, which is an independent class. A good example of this problem is the page lifecycle management: typically, in a Universal Windows app you use the <strong>OnNavigatedTo()</strong> and <strong>OnNavigatedFrom()</strong> events to handle the navigation from one page to another. However, these events are exposed only by the code behind class, since it inherits from the <strong>Page</strong> class; you can’t use them in a ViewModel, which doesn’t have any dependency from it. </p>
+<p>For this reason, many developers have created libraries and frameworks which makes the developer’s life easier, by providing all the needed tools. The most popular ones are MVVM Light by Laurent Bugnion, Caliburn Micro by Rob Esieneberg and Prism, originally developed by the Microsoft Pattern &amp; Practice division and now turned in to a community project. Every framework has its own pros and cons: MVVM Light is the simplest and most flexible one, but it lacks any helper to handle the typical scenarios of a Universal Windows app. Caliburn Micro and Prism, on the other side, are more complex to master and a little bit “rigid”, but they offer many tools to handle common scenarios like navigation, page lifecycle, etc.</p>
+<p>Template10 doesn’t act as another MVVM framework (even if, as we’re going to see, it offers some classes to implement it without having to rely on another library), but it helps developers to make the implementation of the MVVM pattern easier. Let’s see in details which are these facilities: it’s important to remember that what we have described in the previous posts (bootstrapper, extended splash screen, the new controls, etc.) can be applied also on MVVM based projects.</p>
+<h3>The basic tools to implement the pattern</h3>
+<p>Even if Template10 doesn’t behave as a complete alternative to the existing libraries, it offers any way the basic tools required to implement it in the proper way. You aren’t forced to use them: you can choose, for example, to add MVVM Light to your project and to use its helpers in replacement of the ones that I’m going to describe.</p>
+<p>The first important helper offered by Template10 is the <strong>ViewModelBase</strong> class, which is the base class which your ViewModels should inherit from. Other than offering a set of useful features that we’re going to see later in this post, it offers the basic tools to implement the pattern. The most important one is the <strong>Set() </strong>method, which can be used to propagate the changes to the ViewModel properties to the user interface, by implementing the <strong>INotifyPropertyChanged</strong> interface. Here is how you can use it to define a property in the ViewModel:</p>
+<pre class="brush: csharp;">public class MainViewModel : Template10.Mvvm.ViewModelBase 
+{ 
+    public MainViewModel() 
+    { 
+
+    } 
+
+    private string _name; 
+
+    public string Name 
+
+    { 
+        get { return _name; } 
+        set { Set(ref _name, value); } 
+    } 
+} 
+
+</pre>
+<p>The <strong>Set()</strong> method, invoked inside the property’s setter, allows to send a notification to the view that the value has changed, other than just effectively changing the value of the property. This way, if in the View you have one or more controls connected to this property through binding, they will update their visual state to reflect the changes. For example, here is how you can connect a <strong>TextBlock</strong> control placed in the XAML page to the property we’ve just declared:</p>
+<pre class="brush: xml;">&lt;TextBlock Text=&quot;{Binding Path=Name}&quot; /&gt; 
+</pre>
+<p>If you already have some experience with MVVM Light, this approach will be familiar to you: also this toolkit offers a method called <strong>Set()</strong>, which has the same purpose.</p>
+<p>Another important feature that Template10 implements is the <strong>DelegateCommand</strong> class, which can be used to easily create commands. Which is the purpose of commands? When it comes to handle the user interaction in a traditional application created using the code-behind approach, you rely on <strong>event handlers: </strong>they’re methods that are connected to an event that is raised by a control, like pressing a button or selecting an item from a list. These event handlers have a tight dependency with the view and, as such, they can be declared only in the code-behind class. In a MVVM application, instead, most of the logic is handled by the ViewModel and, consequently, we would need to handle the user interaction in a ViewModel. This is exactly the purpose of commands: a way to handle an event using a property, so that we can connect it to a control using binding. This way, we can “break” the dependency that traditional event handlers have with the view and we can declare commands in any class, including ViewModels.</p>
+<p>A command is defined by:</p>
+<ol>
+<li>The actions to perform when the command is invoked.
+<li>The condition that needs to be satisfied to enable the command. This feature is very useful, because it makes sure that the control connected to the command automatically changes his visual status based on the command status. For example, if a command is connected to a <strong>Button</strong> control and, during the execution, the command is disabled, also the button will be disabled: it will be displayed in grey and the user won’t be able to tap on it.</li>
+</ol>
+<p>The Windows Runtime offers a base class to implements commands, called <strong>ICommand</strong>: however, it’s just an interface, the concrete implementation is up to the developer, who would need to create a class for every command. To reduce the footprint and speed up the development, Template10 offers a class called <strong>DelegateCommand</strong>, which implements this interface and that can be initialized simply by passing to the constructor the two required information. Here is an example:</p>
+<pre class="brush: csharp;">private DelegateCommand _setNameCommand; 
+
+public DelegateCommand SetNameCommand 
+{ 
+    get 
+    { 
+        if (_setNameCommand == null) 
+        { 
+            _setNameCommand = new DelegateCommand(() =&gt; 
+            { 
+                Result = $&quot;Hello {Name}&quot;; 
+            }, () =&gt; !string.IsNullOrEmpty(Name)); 
+
+        } 
+
+        return _setNameCommand; 
+
+    } 
+} 
+
+</pre>
+<p>The first parameter is an <strong>Action</strong> (in this case, it’s defined using an anonymous method), which defines the operations to execute when the command is invoked. The second optional parameter, instead, is a function that should return a boolean value and that is used to determine if the command is enabled or not. In the sample, the command is enabled only in case the content of the <strong>Name</strong> property isn’t empty.</p>
+<p>Once you have defined a command, you can connect it to a XAML control using the property with the same name, which is exposed by all the controls that support the user interaction (like the <strong>Button</strong> control).&nbsp; The following sample shows how to use the <strong>Command</strong> property offered by the <strong>Button</strong> control to connect the <strong>DelegateCommand</strong> property we’ve previously defined.</p>
+<pre class="brush: xml;">&lt;Button Content=&quot;Click me&quot; Command=&quot;{Binding Path=SetNameCommand}&quot; /&gt; 
+</pre>
+<p>Also in this case, if you have previous experience with MVVM Light, the approach will be familiar: the toolkit, in fact, offers a class called <strong>RelayCommand</strong> for the same purpose and which works in the same way.</p>
+<h3></h3>
+<h3>Navigation and page’s lifecycle</h3>
+<p>We already mentioned this scenario multiple times in this post: one of the key scenarios to handle in a Universal Windows app is the page’s lifecycle. Frequently, the navigation events are used to handle basic operations like data loading. As such, having access to these kind of events also in a ViewModel is critical, since usually all the logic is there.</p>
+<p>For this purpose, the <strong>ViewModelBase</strong> class offers a set of additional features to make the developer’s life easier. The first feature is the implementation of an interface called <strong>INavigable</strong>, which allows to access to the navigation events directly in a ViewModel, like in the following sample:</p>
+<pre class="brush: csharp;">public class DetailViewModel : ViewModelBase 
+{ 
+    public override void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary&lt;string, object&gt; state) 
+    { 
+        if (parameter != null) 
+        { 
+            int id = (int) parameter; 
+            //load data 
+        } 
+    } 
+
+    public override Task OnNavigatedFromAsync(IDictionary&lt;string, object&gt; state, bool suspending) 
+    { 
+        return base.OnNavigatedFromAsync(state, suspending); 
+    } 
+} 
+</pre>
+<p>As you can see, thanks to this base class you get a 1:1 mapping with the same methods that are available in the code-behind class. You get also useful information about the navigation, like parameters that have been passed from another page or the <strong>NavigationMode</strong>, which can be useful to distinguish the different navigation scenarios (for example, you may decide to load the application’s data only when the <strong>NavigationMode</strong> parameter is set to <strong>New</strong>, which means that it’s a new navigation).</p>
+<p>Another navigation feature offered by the <strong>ViewModelBase</strong> class is the <strong>NavigationService</strong>, which is a helper that can be used to trigger the navigation from one page to another directly in the ViewModel. Again, this is a scenario that, without this helper, would be supported only in the code-behind class: navigation is handled, in fact, by the <strong>Frame</strong> class, which can be accessed only in code-behind. The <strong>NavigationService</strong> class is pretty straightforward to use, since it mimics the behavior of the <strong>Frame</strong> one: to navigate from one page to another you can use the <strong>Navigate() </strong>method, passing as information the page’s type and, optionally, a parameter.</p>
+<pre class="brush: csharp;">NavigationService.Navigate(typeof(DetailPage), person?.Id); 
+</pre>
+<p>As you can see in the documentation, the <strong>Navigate()</strong> method accepts as parameter a generic<strong> object</strong>: however, it isn’t a good practice to pass complex objects from one page to another, but it’s better to stick with simple types (a string, a number, etc.). This way, we make sure not to break the state management system implemented by Template10 (that we’re going to see later), which requires that parameters needs to be serializable.</p>
+<h3></h3>
+<h3>Handle the page’s state</h3>
+<p>One of the most important scenarios to handle in a Universal Windows app is the application’s lifecycle. When an application isn’t in foreground anymore, it’s suspended: the process is frozen in memory (so that the state is preserved) but all the threads that can use CPU, battery or network are terminated. When the application is resumed, we don’t have to do anything special: since the state was preserved in memory, the app will be restored exactly as it was. However, the operating system can decide to terminate a suspended application in case the resources are running low. In this case, since the process is completely killed, when the app is resumed it won’t automatically be restored to the previous state. As developers, we need to handle this scenario: since the termination by the OS is completely transparent to the user, he will expect to find the application as he left it. It’s our duty to properly save and restore the page’s state. Let’s say, for example, that our application includes a page with some fields that the user needs to fill before moving on (like a registration form). Once the application is suspended and then resumed, he would expect to find the data he already filled already there and not to fill the entire form from scratch.</p>
+<p>When you use the MVVM pattern, handling this scenario introduces some challenges:</p>
+<ol>
+<li>Since we don’t know for sure if the suspended application will be terminated or not, we need to save the page’s state every time a new navigation is performed. When you use the MVVM pattern without relying on other libraries (like Template10), this requirement is hard to handle because we don’t have access to the navigation events in a ViewModel.</li>
+<li>When the application is suspended, we need to save in the local storage the application’s state, like the content of the registration form or the last visited page. Then, when the application is resumed, we need to understand if it was terminated and, consequently, restore the state we’ve previously saved. Unfortunately, the basic Windows 10 template doesn’t offer any tool or API to make easier for the developer to support this scenario.</li>
+</ol>
+<p>Template10 makes the whole process a lot easier. When we have seen the sample code about handling the page’s lifecycle, you may have noticed that the <strong>OnNavigatedTo() </strong>and <strong>OnNavigatedFrom()</strong> events expose a parameter called <strong>state</strong>. It’s a dictionary, which can contain a list of key-value pairs, that are automatically serialized and deserialized in the local storage when the app is suspended or resumed. When the application is suspended, you’re going to use the <strong>OnNavigatedFrom()</strong> method to add in the dictionary all the information we need to recover the application’s state. When the page is loaded, instead, in the <strong>OnNavigatedTo()</strong> event, we’ll retrieve the previously saved info and we’ll assign them to the proper properties in the ViewModel.</p>
+<p>Let’s see a real sample, by defining a page with a <strong>TextBox</strong> control. The user can insert any text in it, which is saved into a ViewModel property, like the following one</p>
+<pre class="brush: csharp;">private string _name; 
+
+public string Name 
+{ 
+
+    get { return _name; } 
+    set { Set(ref _name, value); } 
+} 
+
+</pre>
+<p>The property is connected, as usual, to the <strong>TextBox</strong> control using binding:
+<pre class="brush: xml;">&lt;TextBlock Text=&quot;{Binding Path=Name, Mode=TwoWay}&quot; /&gt; 
+</pre>
+<p>You can notice that the binding has been configured using the <strong>TwoWay</strong> mode: this way, every time the user will write something in the <strong>TextBox</strong>, the <strong>Name</strong> property in the ViewModel will be automatically updated with the new value.</p>
+<p>Now you can try to suspend the application and to open it back, by using the dropdown menu called <strong>Lifecycle events</strong> in Visual Studio, that allows to simulate the different stages of the application’s lifecycle. It’s important to remind, in fact, that when the debugger is attached, the app <strong>is not suspended</strong> when you put in background, like instead happens during the regular usage. If we write some text in the <strong>TextBox</strong> control, then we suspend the app and we open it back, we will find everything as we’ve left, since the app was just suspended and the process kept in memory. However, if we try to do the same but using the <strong>Suspend and shutdown</strong> option, you will notice that the content of the <strong>TextBox</strong> control will be gone: the process has been indeed terminated and, since we didn’t save the content of the <strong>TextBox</strong>, the data was lost during the restore process.</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/10/clip_image002.jpg"><img title="clip_image002" style="border-top: 0px; border-right: 0px; background-image: none; border-bottom: 0px; padding-top: 0px; padding-left: 0px; border-left: 0px; display: inline; padding-right: 0px" border="0" alt="clip_image002" src="http://wp.qmatteoq.com/wp-content/uploads/2015/10/clip_image002_thumb.jpg" width="240" height="109"></a> </p>
+<p>To avoid this issue we can use the dictionary I’ve previously mentioned: in the <strong>OnNavigatedFrom()</strong> method of the ViewModel we can understand if the app is being suspended and, eventually, save in the collection the information we need to restore the state.
+<pre class="brush: csharp;">public class DetailViewModel : ViewModelBase 
+{ 
+
+    private string _name; 
+
+    public string Name 
+    { 
+        get { return _name; } 
+        set { Set(ref _name, value); } 
+    } 
+
+    public override Task OnNavigatedFromAsync(IDictionary&lt;string, object&gt; state, bool suspending) 
+    { 
+        if (suspending) 
+        { 
+            state.Add(&quot;Name&quot;, Name); 
+        } 
+        
+        return base.OnNavigatedFromAsync(state, suspending); 
+    } 
+} 
+
+</pre>
+<p>By using the boolean parameter called <strong>suspending</strong> we understand if the app is being suspended: if that’s the case, we can save into the dictionary called <strong>state</strong> the value of the <strong>Name </strong>property, by matching it to a key with the same name. This way, during the suspension, Template10 will automatically take care of serializing the content of this dictionary into the local storage in a text file. Now it will be easier for you to understand one of the key requirements of this implementation: we can store into the dictionary only simple data, that can be serialized into XML or JSON file. Saving, for example, an image stream into the dictionary wouldn’t work.</p>
+<p>The next step is to handle the page loading: in case the <strong>state</strong> dictionary contains some data in the <strong>OnNavigatedTo()</strong> method, then it means that the app is being resumed from a suspension and we need to retrieve the. Also in this case most of the work will be done by Template10: the bootstrapper will take care of loading the data that was previously serialized and it will automatically redirect the user to the last visited page of the application. This way, we can simply access to the <strong>state</strong> parameter in the <strong>OnNavigatedTo()</strong> method and use the data to populate back the properties in our ViewModel, like in the following sample:
+<pre class="brush: csharp;">public class DetailViewModel : ViewModelBase 
+{ 
+
+    private string _name; 
+
+    public string Name 
+    { 
+        get { return _name; } 
+        set { Set(ref _name, value); } 
+    } 
+
+    public override void OnNavigatedTo(object parameter, NavigationMode mode, IDictionary&lt;string, object&gt; state) 
+    { 
+        if (state.Any()) 
+        { 
+            Name = state[&quot;Name&quot;].ToString(); 
+            state.Clear(); 
+        } 
+
+    } 
+
+    public override Task OnNavigatedFromAsync(IDictionary&lt;string, object&gt; state, bool suspending) 
+    { 
+        if (suspending) 
+        { 
+            state.Add(&quot;Name&quot;, Name); 
+        } 
+
+        return base.OnNavigatedFromAsync(state, suspending); 
+    } 
+} 
+
+</pre>
+<p>Inside the <strong>OnNavigatedTo()</strong> method we check if there is any data inside the dictionary: only in this case we retrieve the value identified by the <strong>Name</strong> key and we assign it to the proper ViewModel’s property. The next step is to clear the content of the collection (using the <strong>Clear()</strong> method), to avoid that the data is retrieved again also when we’re simply navigating from one page to another.</p>
+<p>Now we can try again to suspend the app using the <strong>Suspend and shutdown</strong> option offered by Visual Studio: now the application will behave as expected and the content of the <strong>TextBox</strong> control will still be there.</p>
+<p><strong>Important!</strong> It’s crucial to remind that this approach has to be used to save the page’s state, not the application data. Data generated by the user has to be saved as soon as possible, to minimize data loss in case of unexpected errors. During the suspension, you have between 5 and 10 seconds to complete all the pending operations, which may not be enough to save all the data handled by your application. The only data we need to save during suspension are the one that makes easier for the developer to create the illusion that the app has never been closed, even if it was silently terminated by the operating system.</p>
+<h3></h3>
+<h3></h3>
+<h3>Access to the UI thread</h3>
+<p>Sometimes you may have the requirement, inside a ViewModel, to perform some operations on background threads. In this case, if we try to directly access to one of the UI controls (for example, because we need to change the value of a property which is connected to a control in the View), we ill get an exception: the reason is that we’re trying to access to the UI thread from a secondary one.</p>
+<p>The Windows Runtime offers a class called <strong>Dispatcher</strong> to solve this problem: it’s a sort of “mailman”, which is able to dispatch some operations to the UI thread, regardless of the thread where the execution is happening. Also in this case, we’re talking about a class which can be easily accessed from a code-behind class, but the same doesn’t apply to an independent class like a ViewModel. Template10 includes a helper that makes easier to access to the dispatcher also from a third party class, like a ViewModel, by exposing a property called <strong>Dispatcher</strong> as part of the <strong>ViewModelBase</strong> infrastructure:</p>
+<pre class="brush: csharp;">await Dispatcher.DispatchAsync(() =&gt; 
+{ 
+    //do something on the UI thread 
+}); 
+
+</pre>
+<p>Using it is very easy: just call the <strong>DispatchAsync()</strong> method of the <strong>Dispatcher</strong> class by passing, as parameter, an <strong>Action</strong> with the operations that you want to perform on the UI thread.</p>
+<h3></h3>
+<h3>Wrapping up</h3>
+<p>Template10 can be really helpful when you’re working with the MVVM pattern in a Universal Windows app: you can focus on getting things done, rather than trying to reinvent the wheel every time to handle the fundamentals of Universal Windows app development. However, Template10 is still growing and the number of services that will make easier to integrate Windows features into a ViewModel will continue to grow!</p>
+<p>For the moment, we’ve finished our journey to discover the Template10 features, but I’m sure we’ll have the chance to talk about it again in the future. Don’t forget that you can find all the information about the project, in addition to many samples, on the official GitHub repository <a href="https://github.com/Windows-XAML/Template10">https://github.com/Windows-XAML/Template10</a></p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-mvvm/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-mvvm/</feedburner:origLink></item>
+		<item>
+		<title>Template10: a new template to create Universal Windows apps – The controls</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/pzkNfKh7n7Q/</link>
+		<comments>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-the-controls/#comments</comments>
+		<pubDate>Fri, 11 Sep 2015 15:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[Universal Apps]]></category>
+		<category><![CDATA[Template10]]></category>
+		<category><![CDATA[Windows 10]]></category>
+		<category><![CDATA[wpdev]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6457</guid>
+		<description><![CDATA[In the previous post we started to know Template10, the new open source template developed by a Microsoft, with the goal to become the starting point for every Universal Windows app developer. In this post we’re going to see some cool custom controls provided by the library. The PageHeader control One of the new features [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p><a href="http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-the-basics/" target="_blank">In the previous post</a> we started to know Template10, the new open source template developed by a Microsoft, with the goal to become the starting point for every Universal Windows app developer. In this post we’re going to see some cool custom controls provided by the library.<br />
+<h1></h1>
+<h1>The PageHeader control</h1>
+<p>One of the new features available in Windows 10, when it comes to design the user interface, is the improved flexibility regarding the application bars. In Windows and Windows Phone 8.1 you were able to place an application bar only at the bottom of the screen. Only in Windows 8.1 you were allowed to have a top application bar, but not for commanding purposes: it had to be used to make easier for the user to navigate through the sections of the application. </p>
+<p>The bottom application bar was implemented using a control called <strong>CommandBar</strong>, which makes easier for the developer to quickly add buttons so that that the user can interact with the content on the screen. Windows 10 allows, instead, to place the <strong>CommandBar</strong> control also at the top. The <strong>PageHeader</strong> control is an extension of the <strong>CommandBar</strong> one, so that you can use it not just to provide commands to the user, but also to act as a real header of the page. Thanks to this control, it will be easier to implement the same look &amp; feel offered by many native applications like News or Money, which offer an header with the tile of the page and a set of buttons to handle navigation or content interaction.</p>
+<p>The first step to add a <strong>PageHeader</strong> control is to declare in the XAML page the required namespace, which is <strong>Template10.Controls</strong>, like in the following sample:</p>
+<pre class="brush: xml;">&lt;Page
+    x:Class=&quot;Controls.Views.MainPage&quot;
+    xmlns:controls=&quot;using:Template10.Controls&quot;
+    mc:Ignorable=&quot;d&quot;&gt;
+
+    
+&lt;/Page&gt;
+
+</pre>
+<p>Now you can add the control to your page by using the following code:
+<pre class="brush: xml;">&lt;controls:PageHeader Frame=&quot;{x:Bind Frame}&quot; /&gt;
+</pre>
+<p>One of the key properties is called <strong>Frame</strong>. As we’re going to se later, one of the key features provided by the control is the built-in management of the navigation framework. To make this feature working, we need to connect to the <strong>PageHeader</strong> control the application’s frame, which handles the pages and the navigation between them: we can do it using the new <strong>x:Bind</strong> markup extensions, which is able to perform a binding with objects exposed by the code behind class.</p>
+<p>This is how the standard <strong>PageHeader</strong> control looks like:</p>
+<p>&nbsp;</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image002.jpg"><img title="clip_image002" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image002" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image002_thumb.jpg" width="380" height="217"></a> </p>
+<h1></h1>
+<h2>Customizing the control</h2>
+<p>The key property to customize the <strong>PageHeader</strong> control is <strong>Text</strong>, which allows to set the text that is displayed in the header (typically, the title of the page). Eventually, you can also customize the standard color that is assigned to the text and to the background, by using the <strong>HeaderForeground</strong> and <strong>HeaderBackground</strong> properties. The following samples shows a customized header, with a red text and an orange background.</p>
+<pre class="brush: xml;">&lt;controls:PageHeader Text=&quot;Main Page&quot; Frame=&quot;{x:Bind Frame}&quot; HeaderBackground=&quot;Orange&quot; HeaderForeground=&quot;Red&quot; /&gt;</pre>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image004.jpg"><img title="clip_image004" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image004" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image004_thumb.jpg" width="377" height="201"></a> </p>
+<h2>Handle navigation</h2>
+<p>The <strong>PageHeader</strong> control offers a built-in back button to handle the navigation towards the previous page of the application, which is controlled by a property called <strong>BackButtonVisibility.</strong> When this property is set to <strong>Visible</strong>, the button is displayed at the left of the header’s text.</p>
+<pre class="brush: xml;">&lt;controls:PageHeader Text=&quot;Detail&quot; Frame=&quot;{x:Bind Frame}&quot; BackButtonVisibility=&quot;Visible&quot; /&gt;
+</pre>
+<h2><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image006.jpg"><img title="clip_image006" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image006" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image006_thumb.jpg" width="382" height="248"></a></h2>
+<p>However, it’s very important to highlight that the button’s visibility isn’t controlled just by this property, but also by the operating system, which can override our configuration. Specifically: </p>
+<ol>
+<li>The control, thanks to the <strong>Frame</strong> property, is connected to the navigation’s frame. Consequently, it’s able to automatically detect if there are pages in the back stack so that if it’s empty (for example, because you’re in the main page), the button will always be hidden.
+<li>Windows 10 can run on multiple devices, which can offer a different navigation experience. If, on the desktop, we have more freedom (we can use the virtual back button embedded in the chrome or include it in the UI of the application), on mobile instead you need to leverage the hardware back button available on every device. As such, if you set the <strong>BackButtonVisibility</strong> property of the control to <strong>Visible</strong> but the app is running on a phone, the button will be hidden anyway.
+<li>On desktop, as we’ve seen in the previous post, we have the chance to leverage a virtual back button, which is added on the app’s chrome, to handle the navigation. If we have enabled this option (which Template10 applies by default but that can be controlled by the <strong>ShowShellBackButton</strong> property of the <strong>BootStrapper</strong> class), the <strong>PageHeader </strong>control’s button will be hidden anyway.</li>
+</ol>
+<h2></h2>
+<h2>The commands</h2>
+<p>As mentioned in the beginning of the post, <strong>PageHeader</strong> extens the <strong>CommandBar</strong> control, which is used to add an application bar with one or more commands, so that the user can interact with the current content. Consequently, the <strong>PageHeader</strong> control offers the same features of the <strong>CommandBar</strong> one and follows the same principles:</p>
+<ul>
+<li>Inside the <strong>PrimaryCommands</strong> collection you can add one or more buttons, which will always be visible and represented by an icon and a label.
+<li>Inside the <strong>SecondaryCommands</strong> collection you can add one or more buttons which, instead, will be hidden by default: the user will be able to see them only by tapping on the three dots displayed at the end of the bar. Secondary commands are represented only with a label.</li>
+</ul>
+<p>Inside the two collections you don’t have the freedom to add any XAML control, but there’s a specific subset of controls which has been designed to work with a <strong>CommandBar</strong>. The most used one is <strong>AppBarButton</strong>, which represents a button that the user can press. It can have an image (defined by the <strong>Icon </strong>property) and a description (defined by the <strong>Label </strong>property) and you can subscribe to the <strong>Click</strong> event to handle the user’s interaction.</p>
+<p>The following sample code defines a <strong>PageHeader</strong> control with one primary command and two secondary commands:</p>
+<pre class="brush: xml;">&lt;controls:PageHeader Text=&quot;Main Page&quot; Frame=&quot;{x:Bind Frame}&quot;&gt;
+    &lt;controls:PageHeader.PrimaryCommands&gt;
+        &lt;AppBarButton Icon=&quot;Forward&quot; Label=&quot;Next&quot; Click=&quot;OnNextClicked&quot; /&gt;
+    &lt;/controls:PageHeader.PrimaryCommands&gt;
+    &lt;controls:PageHeader.SecondaryCommands&gt;
+        &lt;AppBarButton Label=&quot;Option 1&quot; /&gt;
+        &lt;AppBarButton Label=&quot;Option 2&quot; /&gt;
+    &lt;/controls:PageHeader.SecondaryCommands&gt;
+&lt;/controls:PageHeader&gt;
+
+</pre>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image008.jpg"><img title="clip_image008" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image008" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image008_thumb.jpg" width="431" height="374"></a></p>
+<p>&nbsp;</p>
+<p>It’s really important to evaluate how many buttons you want to add in the control, especially if you’re application targets multiple families of devices. For example, the usage of many primary commands isn’t a big deal on the desktop: since the screen is bigger and usually in landscape, there’s plenty of available space. The same rules don’t apply to a smartphone: in this scenario, it’s better to reduce the number of primary commands and rely more on the secondary ones.</p>
+<p>The following image shows the same layout with three primary commands: you can notice how it works perfectly on the desktop, but it messes up on the mobile (due to the reduced space, the buttons overlaps with the header’s text).</p>
+<p>&nbsp;</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image010.jpg"><img title="clip_image010" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image010" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image010_thumb.jpg" width="579" height="205"></a> </p>
+<p>&nbsp;<br />
+<h1></h1>
+<h1>The HamburgerMenu control</h1>
+<p>Another new Windows 10 feature is the <strong>SplitView</strong> control, which can be used to implement navigation experiences based on the hamburger menu in your applications. This approach is based on a side panel (typically, it’s placed on the left of the screen) which the user can expand by tapping a button on the top of the panel (usually, in the top left corner). Inside the panel you can usually find multiple items, which can be used to quickly jump from one section to another of the application. The name comes from the fact that the button to show or hide the panel is visually represented by thee lines, one on top of the other, which look like a hamburger between two pieces of bread.</p>
+<p>Many native applications are using this approach, like News (which uses the panel to give access to the different sections of the app) or Mail (which, instead, uses the panel to show the available mail accounts with their sub folders).</p>
+<p>The <strong>SplitView</strong> control is just one of the many controls that are available to define the navigation experience of your application: it’s not the only one and Microsoft doesn’t want to force you to use it in any application you create. It’s up to the developer to find the navigation approach that works best for him. Consequently, the <strong>SplitView</strong> control leaves a lot of freedom to the developer. It just gives you an easy way to split the page in two parts: a sliding panel and the main content. It’s up to you to define the look &amp; feel of both parts.</p>
+<p>The downside of this freedom is that we have a bit of work to do if we want, instead, implement a traditional hamburger menu navigation, similar to the one used by some native apps. Template10 simplifies a lot our job since:</p>
+<ol>
+<li>It offers a control called <strong>HamburgerMenu</strong>, which makes easier to define the panel that will contain the list of application’s sections.
+<li>It offers a way to create a <strong>shell</strong>, which is a special page that will act as a container for the application. The shell will contain the menu, while the content area will be filled with the various pages of the application.
+<li>It offers a set of built-in styles to recreate a panel with the same look &amp; feel of the one used by native apps (highlight of the current section, icon support, etc.)</li>
+</ol>
+<p>Thanks to Template10 we’ll be able to achieve a result very close to the following one:</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image012.png"><img title="clip_image012" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image012" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image012_thumb.png" width="338" height="416"></a> </p>
+<p>Let’s see how to implement it. </p>
+<h1></h1>
+<h2></h2>
+<h2>The HamburgerMenu control</h2>
+<p>Like the <strong>PageHeader</strong> control, the <strong>HamburgerMenu</strong> one is defined inside the<strong> Template10.Controls</strong> namespace, which you need to add in the XAML declaration. After that, you’ll be able to add it into a page:</p>
+<pre class="brush: xml;">&lt;controls:HamburgerMenu x:Name=&quot;Menu&quot; /&gt;
+</pre>
+<p>Customization is allowed thanks to the following properties:</p>
+<ul>
+<li><strong>HamburgerBackground </strong>and <strong>HamburgerForeground</strong> define the background and foreground color of the hamburger button (the one used to show / hide the panel)
+<li><strong>NavButtonBackground</strong> and <strong>NavButtonForeground</strong> define the background and foreground color of the buttons in the panel.
+<li><strong>NavAreaBackground </strong>defines the background color of the panel.</li>
+</ul>
+<p>An important feature offered by the <strong>HamburgerMenu</strong> control, compared to the standard <strong>SplitView</strong> one, is built-in support to two categories of commands, similarly to the <strong>PageHeader</strong> control:</p>
+<ul>
+<li><strong>PrimaryButtons</strong> identifies the most used sections of the your application and they are placed at the top of the panel, right below the hamburger button.
+<li><strong>SecondaryButtons</strong> identifies the sections of your app that the user will probably visit less frequently, like the Settings or the About page. They are displayed at the bottom of the panel, with a separator at the top.</li>
+</ul>
+<p>Inside both collections you can leverage a specific control offered by Template10 called<strong> NavigationButtonInfo</strong>, which will recreate for you the look &amp; feel of the buttons you can find in the native application. Under the hood, it’s based on the <strong>RadioButton</strong> control, since it already implements a set of features that are ideal for our scenario (mutual choice between each button, highlight of the currently selected item, etc.)</p>
+<p>The following sample shows a complete definition of the <strong>HamburgerMenu</strong> control:</p>
+<pre class="brush: xml;">&lt;controls:HamburgerMenu x:Name=&quot;Menu&quot;
+                        HamburgerBackground=&quot;#FFD13438&quot;
+                        HamburgerForeground=&quot;White&quot;
+                        NavAreaBackground=&quot;#FF2B2B2B&quot;
+                        NavButtonBackground=&quot;#FFD13438&quot;
+                        NavButtonForeground=&quot;White&quot;&gt;
+
+    &lt;controls:HamburgerMenu.PrimaryButtons&gt;
+        &lt;controls:NavigationButtonInfo PageType=&quot;views:MainPage&quot; ClearHistory=&quot;True&quot;&gt;
+            &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
+                &lt;SymbolIcon Symbol=&quot;Home&quot; Width=&quot;48&quot; Height=&quot;48&quot; /&gt;
+                &lt;TextBlock Text=&quot;Home&quot; Margin=&quot;12, 0, 0, 0&quot; /&gt;
+            &lt;/StackPanel&gt;
+        &lt;/controls:NavigationButtonInfo&gt;
+            
+        &lt;controls:NavigationButtonInfo PageType=&quot;views:DetailPage&quot;&gt;
+            &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
+                &lt;SymbolIcon Symbol=&quot;Calendar&quot; Width=&quot;48&quot; Height=&quot;48&quot; /&gt;
+                &lt;TextBlock Text=&quot;Calendar&quot; Margin=&quot;12, 0, 0, 0&quot; /&gt;
+            &lt;/StackPanel&gt;
+        &lt;/controls:NavigationButtonInfo&gt;
+    &lt;/controls:HamburgerMenu.PrimaryButtons&gt;
+        
+    &lt;controls:HamburgerMenu.SecondaryButtons&gt;
+        &lt;controls:NavigationButtonInfo PageType=&quot;views:SettingsPage&quot;&gt;
+            &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
+                &lt;SymbolIcon Symbol=&quot;Setting&quot;  Width=&quot;48&quot; Height=&quot;48&quot; /&gt;
+                &lt;TextBlock Text=&quot;Settings&quot; Margin=&quot;12, 0, 0, 0&quot; /&gt;
+            &lt;/StackPanel&gt;
+        &lt;/controls:NavigationButtonInfo&gt;
+    &lt;/controls:HamburgerMenu.SecondaryButtons&gt;
+        
+&lt;/controls:HamburgerMenu&gt;
+
+</pre>
+<p>The samples shows a menu with one primary command and one secondary command. Every button is represented with a <strong>NavigationButtonInfo</strong> control, which has a key property called <strong>PageType</strong>. You can use it to specify which is the page of your application connected to this button: when the user will tap on it, he will be automatically redirected to that page. Additionally, there are two other properties to customize the navigation experience:</p>
+<ul>
+<li><strong>ClearHistory</strong> is a boolean that, when it’s set to <strong>true</strong>, forces the cleanup of the back stack. It’s typically used with the main section of the application, to avoid circular navigation issues (when the user is on the main page of the app and the back button is still enabled).
+<li><strong>PageParameter</strong> is helpful if you need to pass a parameter to the landing page, which can be retrieved using the <strong>OnNavigatedTo()</strong> method.</li>
+</ul>
+<p>The look &amp; feel of the button is up to the developer: inside the <strong>NavigationButtonInfo</strong> control you can include any XAML control. In the sample you can see a definition that will help you to recreate the same look &amp; feel of native apps: an icon (defined by the <strong>SymbolIcon</strong> control) and a label (defined with a <strong>TextBlock</strong> control). Here is how the previous code becomes when the app is running:</p>
+<p>&nbsp;</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image014.jpg"><img title="clip_image014" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image014" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image014_thumb.jpg" width="371" height="328"></a> </p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image016.png"><img title="clip_image016" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image016" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image016_thumb.png" width="369" height="338"></a> </p>
+<p>The <strong>HamburgerMenu</strong> control, to work properly, needs a reference to the <strong>NavigationService</strong>, which is the service provided by Template10 to handle the navigation. This reference is configured in code-behind, thanks to the <strong>NavigationService</strong> property offered by the control:
+<pre class="brush: csharp;">public sealed partial class Shell : Page
+{
+    public Shell(NavigationService navigationService)
+    {
+        this.InitializeComponent();
+        Menu.NavigationService = navigationService;
+    }
+}
+
+</pre>
+<p>In the next section we’re going to learn how to pass a reference to the <strong>NavigationService</strong> to the page that contains the <strong>HamburgerMenu</strong> control, like we’ve seen in the previous sample. </p>
+<h2></h2>
+<h2>Create the shell</h2>
+<p>In the previous sections we’ve learned how, thanks to Template10, it’s easy to implement a navigation pattern based on the hamburger menu. However, we have a problem: the <strong>HambrgerMenu</strong> is just a control and, consequently, you need to add it to a page but, at the same time, you need to handle that every page of your application will reuse the same menu.</p>
+<p>Let’s introduce the <strong>shell</strong>, which is a special page of the application that will act as a container for the pages of the application. By using this approach, the <strong>HamburgerMenu</strong> control will be defined just once inside the shell and, consequently, we won’t have to include it in every page of the application. The first step is to create an empty page in our project and to repeat the steps we’ve already done in the previous section, which are including a <strong>HamburgerMenu</strong> control and connecting the <strong>NavigationService</strong>, like in the following sample:</p>
+<pre class="brush: xml;">&lt;Page
+    x:Class=&quot;HamburgerSample.Views.Shell&quot;
+    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;
+    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;
+    xmlns:views=&quot;using:HamburgerSample.Views&quot;
+    xmlns:d=&quot;http://schemas.microsoft.com/expression/blend/2008&quot;
+    xmlns:mc=&quot;http://schemas.openxmlformats.org/markup-compatibility/2006&quot;
+    xmlns:controls=&quot;using:Template10.Controls&quot;
+    x:Name=&quot;ThisPage&quot;
+    mc:Ignorable=&quot;d&quot;&gt;
+
+    &lt;controls:HamburgerMenu x:Name=&quot;Menu&quot;&gt;
+        
+        &lt;controls:HamburgerMenu.PrimaryButtons&gt;
+            &lt;controls:NavigationButtonInfo PageType=&quot;views:MainPage&quot; ClearHistory=&quot;True&quot;&gt;
+                &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
+                    &lt;SymbolIcon Symbol=&quot;Home&quot; Width=&quot;48&quot; Height=&quot;48&quot; /&gt;
+                    &lt;TextBlock Text=&quot;Home&quot; Margin=&quot;12, 0, 0, 0&quot; /&gt;
+                &lt;/StackPanel&gt;
+            &lt;/controls:NavigationButtonInfo&gt;
+
+            &lt;controls:NavigationButtonInfo PageType=&quot;views:DetailPage&quot; &gt;
+                &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
+                    &lt;SymbolIcon Symbol=&quot;Calendar&quot; Width=&quot;48&quot; Height=&quot;48&quot; /&gt;
+                    &lt;TextBlock Text=&quot;Calendar&quot; Margin=&quot;12, 0, 0, 0&quot; /&gt;
+                &lt;/StackPanel&gt;
+            &lt;/controls:NavigationButtonInfo&gt;
+        &lt;/controls:HamburgerMenu.PrimaryButtons&gt;
+
+        &lt;controls:HamburgerMenu.SecondaryButtons&gt;
+            &lt;controls:NavigationButtonInfo PageType=&quot;views:SettingsPage&quot;&gt;
+                &lt;StackPanel Orientation=&quot;Horizontal&quot;&gt;
+                    &lt;SymbolIcon Symbol=&quot;Setting&quot;  Width=&quot;48&quot; Height=&quot;48&quot; /&gt;
+                    &lt;TextBlock Text=&quot;Settings&quot; Margin=&quot;12, 0, 0, 0&quot; /&gt;
+                &lt;/StackPanel&gt;
+            &lt;/controls:NavigationButtonInfo&gt;
+        &lt;/controls:HamburgerMenu.SecondaryButtons&gt;
+
+    &lt;/controls:HamburgerMenu&gt;
+&lt;/Page&gt;
+
+</pre>
+<pre class="brush: csharp;">public sealed partial class Shell : Page
+{
+    public Shell(NavigationService navigationService)
+    {
+        this.InitializeComponent();
+        Menu.NavigationService = navigationService;
+    }
+}
+
+</pre>
+<p>Now we need to: </p>
+<ol>
+<li>Configure the page we’ve just created as container for all the page of our application, by replacing the standard frame.
+<li>Pass to the page a reference to the <strong>NavigationService</strong> object</li>
+</ol>
+<p>Both operations can be achieved in the <strong>BootStrapper</strong> class: we’re going to use the <strong>OnInitializeAsync() </strong>method, which is performed right before the app triggers the navigation to the main page.</p>
+<pre class="brush: csharp;">sealed partial class App : BootStrapper
+{
+    public App()
+    {
+        this.InitializeComponent();
+    }
+
+    public override Task OnInitializeAsync(IActivatedEventArgs args)
+    {
+        var nav = NavigationServiceFactory(BackButton.Attach, ExistingContent.Include);
+        Window.Current.Content = new Views.Shell(nav);
+        return Task.FromResult&lt;object&gt;(null);
+    }
+
+    public override Task OnStartAsync(BootStrapper.StartKind startKind, IActivatedEventArgs args)
+    {
+        NavigationService.Navigate(typeof(Views.MainPage));
+        return Task.FromResult&lt;object&gt;(null);
+    }
+}
+</pre>
+<p>The first step is to use the <strong>NavigationServiceFactory</strong> method to retrieve the proper reference to the <strong>NavigationService</strong>. This way, we can pass it as a parameter when we create a new instance of the <strong>Shell</strong> page. Then we assign this instance to the <strong>Window.Current.Content</strong> property, which holds a reference to the main frame of the application, which will act as a container for the pages. In a standard application, this property is simply set with a new instance of the <strong>Frame</strong> class. </p>
+<p>Thanks to this line of code, the application won’t use anymore an empty frame as a container for your pages, but the <strong>Shell</strong> page, which contains the <strong>HamburgerMenu</strong> definition. The final result will be that all the pages of your application will share the same menu we have defined in the <strong>Shell</strong> page. </p>
+<h1></h1>
+<h1>HamburgerMenu and PageHeader: the dynamic duo</h1>
+<p>The <strong>PageHeader</strong> and <strong>HamburgerMenu</strong> controls have been designed to work together. The best visual layout, in fact, can be achieved when the various sections in a hamburger menu are handled with a page that has a <strong>PageHeader</strong> control to define the header.</p>
+<p>Moreover, both controls supports the adaptive layout, which is the new approach introduced in Windows 10 to help developers building a single binary package that can runs on every platform (vice versa, on Windows and Windows Phone 8.1 you needed to create and publish two different packages).<strong> Adaptive layout</strong> is an approach which is already widely used in the web world and it simply means that the user interface has to properly react to the changes in the window’s size, so that the app can always offer the best user experience, regardless if it’s running on a mobile phone or on a console.</p>
+<p>Both controls implements this approach to optimize the user experience:</p>
+<ul>
+<li>By default, the <strong>PageHeader</strong> control doesn’t add any margin to the text of the header. When the app’s windows is wide enough, the <strong>HamburgerMenu</strong> control will always be visible in minimal mode (which means that the icons will always be visible, while the labels will be displayed only when the panel is open). Consequently, there’s no need to artificially add a margin in the <strong>PageHeader</strong> control: the hamburger button of the menu already takes care of it.
+<li>When the size of the window is smaller (for example, on a phone) there isn’t enough space to keep the menu icons always visible. Consequently, the panel is completely hidden: only the hamburger button will be visible. In this scenario, the <strong>PageHeader</strong> control adds a 48px margin on the left, to avoid that the header’s text overlaps with the button.</li>
+</ul>
+<p>This behavior is automatically handled by both controls. However, you have the chance to define which is the size of the window that should trigger the two visual states, by using the <strong>VisualStateNarrowMinWidth</strong> and <strong>VisualStateNormalMinWidth</strong> properties. Take a look at the following sample:</p>
+<pre class="brush: xml;">&lt;controls:PageHeader Text=&quot;Main page&quot; Frame=&quot;{x:Bind Frame}&quot;
+                     VisualStateNarrowMinWidth=&quot;0&quot;
+                     VisualStateNormalMinWidth=&quot;700&quot; /&gt;
+</pre>
+<p>With this configuration: </p>
+<ul>
+<li>When the width of the window is between 0 and 700, the control applies the <strong>VisualStateNarrow</strong> visual state, which is the minimal one (the panel is hidden and the header’s text is shifted).
+<li>When the width of the window is bigger than 700, instead, the control applies the <strong>VisualStateNormal </strong>visual state, which is the standard one (the panel is visible in minimal mode and a shift of the header’s text isn’t required).</li>
+</ul>
+<p>The same properties are available also in the <strong>HamburgerMenu </strong>control: of course, to get the best result, it’s important that the two properties are set in the same way on both controls. The following images will help you to understand better the difference between the two states: the first one is the normal state, the second one is the narrow state.</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image017.png"><img title="clip_image017" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image017" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image017_thumb.png" width="379" height="347"></a> </p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image019.png"><img title="clip_image019" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="clip_image019" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/clip_image019_thumb.png" width="376" height="418"></a> </p>
+<p>If you want to disable this behavior for the <strong>PageHeader </strong>control (for example, because you aren’t providing a hamburger menu based navigation experience and, as such, the shift of the header’s text can break your layout) it’s enough to set the <strong>VisualStateNarrowMinWidth</strong> property to –1. </p>
+<h1></h1>
+<h1></h1>
+<h1></h1>
+<h1>Wrapping up</h1>
+<p>In this post we’ve learned how to use the custom controls offered by Template10. In the next post, instead, we’ll see more C# code, since we will focus on how Template10 can make easier the implementation of the MVVM pattern.</p>
+<p>As a reminder, you can find Template10 on GitHub (<a href="http://github.com/Windows-XAML/Template10/">http://github.com/Windows-XAML/Template10/</a>). The repository contains also a set of samples to start playing with the controls described in this post. Happy coding!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-the-controls/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-the-controls/</feedburner:origLink></item>
+		<item>
+		<title>Template10: a new template to create Universal Windows apps – The basics</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/xH3VexWJm3s/</link>
+		<comments>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-the-basics/#comments</comments>
+		<pubDate>Mon, 07 Sep 2015 15:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[Universal Apps]]></category>
+		<category><![CDATA[Template10]]></category>
+		<category><![CDATA[Windows 10]]></category>
+		<category><![CDATA[wpdev]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6434</guid>
+		<description><![CDATA[When you launch Visual Studio 2015 to create a Universal Windows app for Windows 10 for the first time, the first thing you notice is that the number of available templates is very low. If, when it comes to Windows / Windows Phone 8.1 development, Visual Studio 2013 offered many templates to quickly implement the [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>When you launch Visual Studio 2015 to create a Universal Windows app for Windows 10 for the first time, the first thing you notice is that the number of available templates is very low. If, when it comes to Windows / Windows Phone 8.1 development, Visual Studio 2013 offered many templates to quickly implement the most used layouts (Hub, Pivot, etc.), in Visual Studio 2015 we have just one template called “Blank app”.
+<p>The reason of this choice is that, in the past, the standard templates were used by the developers without very good skills in developing the user experience of an application (like me <img class="wlEmoticon wlEmoticon-smile" style="border-top-style: none; border-left-style: none; border-bottom-style: none; border-right-style: none" alt="Smile" src="http://wp.qmatteoq.com/wp-content/uploads/2015/09/wlEmoticon-smile.png"> ) to make the job easier and to avoid to create the user interface from scratch. The downside of this approach is that, during the course of time, it leads many developers to publish a lot of applications that looked very similar to each other. Consequently, Microsoft has decided, with Windows 10, to leave more freedom to the developers and to avoid forcing them to adopt a specific design patter. It’s important to highlight, however, that this doesn’t mean that you can do whatever you want when it comes to create the user interface, without following any criteria. Providing a great user experience is still one of the key pillars to create a successful app! As such, I strongly suggest to read the official guidelines to design Universal Windows apps on the Dev Center: <a href="https://dev.windows.com/en-us/design">https://dev.windows.com/en-us/design</a>
+<p>The new blank template provided by Visual Studio 2015 is very simple and it’s the perfect starting point for every application. However, sometimes, especially when you need to work on a complex project, it can be even too simple. When we need to handle advanced scenarios (like using the MVVM pattern or managing the state of the page) we need to create all the required infrastructure.
+<p>To make the life the developers easier, a team of Microsoft people, lead by Jerry Nixon (a Technical Evangelist very well known for his series of MVA trainings about Windows 10 development) have started to work on an advanced template called <strong>Template10</strong>. It’s an open source project, available on GitHub at <a href="https://github.com/Windows-XAML/Template10">https://github.com/Windows-XAML/Template10</a> and, as such, you’re more then welcome to give your contribute, by helping with the documentation or by making some enhancements and submitting a pull request.
+<p>The project is still evolving, but the goal is very clear: Template10 wants to become the preferred choice for Universal Windows apps developers, independently from the development approach they prefer (code behind, MVVM, etc.) or from the toolkits and libraries they already use in their applications. If you want to learn more about the project, you can read the official FAQ on <a title="https://github.com/Windows-XAML/Template10/wiki/Questions" href="https://github.com/Windows-XAML/Template10/wiki/Questions">https://github.com/Windows-XAML/Template10/wiki/Questions</a>. In the near future, Template10 will be released as a NuGet package and as a Visual Studio extension. This way, you’ll be able to use it as a starting point for your app directly from the <strong>New project</strong> menu in Visual Studio 2015. Meanwhile, however, even if the main library that defines the template’s components is considered stable and ready for production, it’s available only on GithHub. Let’s see which are the required steps to start creating a new Universal Windows app using Template 10.
+<p><strong>UPDATE:</strong> Template10 is now available also as NuGet package: <a href="http://www.nuget.org/packages/Template10/1.0.2.2-preview">http://www.nuget.org/packages/Template10/1.0.2.2-preview</a>. However, to find and install it, you’ll need to enable in the NuGet Package Manager UI the <strong>Include prerelease</strong> options, since the package is still in beta.
+<p>This post is just the first of a series: in this one we’re going to see the basic concepts. In the next ones, we’ll see some more advanced topics like the available controls or the MVVM pattern.<br />
+<h3></h3>
+<h1>Create the first project</h1>
+<p>The first step is to clone the GitHub repository. We can achieve this goal using the tools provided directly by Visual Studio 2015.</p>
+<ol>
+<li>Open the window called <strong>Team Explorer</strong>. As default behavior, it’s placed on the right side of the screen, in the same section where you have access to the <strong>Solution explorer</strong>’s window.
+<li>You’ll find a section labeled <strong>Local Git Repositories</strong>, which lists all the Git repositories on your computer. Press the <strong>Clone </strong>button.
+<li>In the first field (the one with the yellow background) you need to specify the URL of the GitHub repository, which is <a href="https://github.com/Windows-XAML/Template10">https://github.com/Windows-XAML/Template10</a>
+<li>In the second field, instead, you need to set the local path on your computer where you want to clone the project.
+<li>Now press the <strong>Clone </strong>button: Visual Studio will take care of downloading the project and copying it on your computer.</li>
+</ol>
+<p>&nbsp;</p>
+<p><img alt="" src="http://blogs.msdn.com/resized-image.ashx/__size/550x0/__key/communityserver-blogs-components-weblogfiles/00-00-00-87-58/3301.1.png" width="361" height="431"></p>
+<p>From now on, by using Team Explorer, you’ll be able to quickly access to the repository. By using the <strong>Sync</strong> option you’ll have the chance to keep the local repository up to date with the latest version of the library.</p>
+<p>A good starting point for a new Universal Windows app based on Template10 is to use the <strong>Blank</strong> project, which is stored inside the <strong>Templates (Project)</strong> folder. This project already provides the basic infrastructure required by Template10 to work properly. However, in this post we’re going to start with an empty project and to manually configure Template10: this way, it will be easier to understand how it works under the hood.</p>
+<p>Let’s start by creating a new Universal Windows app with the <strong>Blank app</strong> template provided by Visual Studio. Then, let’s right click on the solution in Solution Explorer and choose <strong>Add existing project</strong>. We’ll have to look for the folder where we’ve cloned the GitHub repository and, specifically, we’ll have to find the project named <strong>Template10Library</strong>: you’ll find in the folder with the same name and it’s defined by the <strong>Template10Library.csproj</strong> file. Once you’ve added the project to your solution, it’s time to add a reference to Template10 in our app. Just right click on the project of the application, choose <strong>Add reference </strong>and, in the list, choose the <strong>Template10</strong> project. Now we are ready to start writing some code!</p>
+<h3></h3>
+<h1>The bootstrapper</h1>
+<p>The <strong>App</strong> class is the starting point of every Universal Windows app: its goal is to initialize the main window of the application with its frame, which acts as a container of all the pages of the application and provides the necessary infrastructure to handle the navigations. The base structure of the <strong>App</strong> class (stored in the <strong>App.xaml.cs</strong> file), however, can be a little bit confusing, especially for new developers. You’ll find a lot of fixed code, which is part of the standard initialization and, as such, it creates just “noise”, since you’ll probably never change it. Another weak point is the application’s lifecycle management. The App class offers different event handlers to manage the different application’s state (launching, suspending, resuming, etc.) but, based on the activation’s type, you can have multiple entry points. Template10 makes the initialization of the app easier to understand and to use by providing a <strong>bootstrapper, </strong>which is a class that replaces the <strong>App</strong> one and that simplifies the code. The first step to use is to replace the <strong>App</strong> class with the <strong>BootStrapper</strong> one, which is included in the <strong>Template10.Common</strong> namespace. Here is a sample definition:</p>
+<pre class="brush: xml;">&lt;common:BootStrapper
+        x:Class=&quot;BasicSample.App&quot;
+        xmlns:common=&quot;using:Template10.Common&quot;
+        xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;
+        xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;&gt;
+
+&lt;/common:BootStrapper&gt; 
+
+</pre>
+<p>You can notice that the main <strong>App </strong>node has been replaced with the <strong>BootStrapper</strong> one. Consequently, you will have also to update the code-behind class (the <strong>App.xaml.cs</strong> file), so that the <strong>App </strong>class inherits from the <strong>BootStrapper</strong> one, like in the following sample:</p>
+<pre class="brush: csharp;">sealed partial class App : Template10.Common.BootStrapper
+{ 
+    public App() 
+    { 
+        InitializeComponent(); 
+    } 
+
+}</pre>
+<p>Here is, instead, how a complete definition of the <strong>BootStrapper</strong> class looks like:</p>
+<pre class="brush: csharp;">sealed partial class App : Template10.Common.BootStrapper
+{
+    public App()
+    {
+        InitializeComponent();
+    }
+
+    public override Task OnStartAsync(StartKind startKind, IActivatedEventArgs args)
+    {
+        NavigationService.Navigate(typeof(MainPage));
+ return Task.FromResult&lt;object&gt;(null);
+    }
+}
+
+</pre>
+<p>You can immediately notice how, compared to the standard <strong>App</strong> class, the code is much more simple to understand. The core is the <strong>OnStartAsync()</strong> method, which is the starting point of the application, regardless from the activation’s scenario. No matter if the app has been opened using the main tile, a secondary tile or from a toast notification, the <strong>OnStartAsync()</strong> method will always be invoked to let you, as developer, handling the main navigation. In the simplest scenario (your app doesn’t have secondary tiles or doesn’t support secondary activation entries), the method will look like the one in the sample: it simply takes care of redirecting the user to the main page of the application. The second operation is just a workaround to support asynchronous code inside this method. To properly support async / await operations, the method has been configured to return a <strong>Task</strong> object; however if, like in this case, you don’t have the requirement to perform any asynchronous operation, we simply return an empty Task, so that the code can compile.</p>
+<p>The main advantage of the <strong>OnStartAsync()</strong> method is that the bootstrapper, under the hood, always takes care of preparing the Frame, which is required to handle the rendering and the navigation of the pages of the application. The standard <strong>App</strong> class, instead, takes care of initializing the Frame only in the main entry point (the <strong>OnLaunched()</strong> event handler), leaving you to do all the “dirty work” in case the app has been opened from a different activation point.</p>
+<p>To help you understanding better this approach, here is a sample bootstrapper used to handle the activation from a secondary tile:</p>
+<pre class="brush: csharp;">sealed partial class App : Template10.Common.BootStrapper
+{
+    public App()
+    {
+        InitializeComponent();
+    }
+
+    public override Task OnStartAsync(StartKind startKind, IActivatedEventArgs args)
+    {
+        AdditionalKinds cause = DetermineStartCause(args);
+        if (cause == AdditionalKinds.SecondaryTile)
+        {
+            LaunchActivatedEventArgs eventArgs = args as LaunchActivatedEventArgs;
+            NavigationService.Navigate(typeof (DetailPage), eventArgs.Arguments);
+        }
+        else
+        {
+            NavigationService.Navigate(typeof (MainPage));
+        }
+
+        return Task.FromResult&lt;object&gt;(null);
+    }
+}
+
+</pre>
+<p>The code is very simple to understand. Thanks to the internal method <strong>DetermineStartCause()</strong> we are able to determine which is the activation point of the app and to redirect the user to the most appropriate page. In the sample we are handling the scenario where the tap on a secondary tile redirects the user to a specific item of the application (like a category of news): in case the activation’s cause is <strong>AdditionalKinds.SecondaryTile</strong>, we retrieve the tile’s arguments (thanks to the <strong>Arguments</strong> property) and we pass it to the page called <strong>DetailPage</strong>. In case, instead, the application has been regularly launched using the main tile, the user is simply redirected to the main page.</p>
+<p>With the same approach we can handle all the other activation’s scenarios: from a toast notification, from a uri, from a sharing contract, etc. In this case, the <strong>DetermineStartCause()</strong> method will return you the <strong>Other</strong> value of the <strong>AdditionalKinds</strong> enumerator. To properly determine what’s happened, we need to use the <strong>Kind</strong> property of the activation’s parameter which type is <strong>IActivatedEventArgs</strong>.</p>
+<p>Inside the bootstrapper class you have also the chance to override three other methods, which can be useful to handle special scenarios.</p>
+<ol>
+<li><strong>OnInitializeAsync()</strong> is invoked when the app is initialized, right before calling the <strong>OnStartAsync()</strong> method. It’s useful if you have any service or feature that requires to be initialized at startup (for example, analytics services like Application Insights).
+<li><strong>OnResuming()</strong> has the same purpose of the method with the same name of the standard <strong>App </strong>class and it’s invoked when the application is resumed after it has been suspended. Typically, you’re not required to handle this event; the reason is that it’s triggered only when the application has been resumed from a suspension state and not from a termination. As such, since the process was kept in memory, you don’t have to retrieve the state you may have previously saved, since it’s still there. This method can be useful if you need to refresh the data in case, for example, the user has resumed the application after a while.
+<li><strong>OnSuspending()</strong> is invoked when the application is suspended. Typically, this method is used to save the application’s state, so that it can be restored in the case the app is terminated by the operating system due to low resources. However, as we’re going to see in the next posts, with Template10 this operation is not required: the bootstrapper is able to take care of this scenario automatically.</li>
+</ol>
+<h1></h1>
+<h1>Extended splash screen</h1>
+<p>The splash screen is a static image (placed in the Assets folder of your project) which is displayed to the user during the app’s initialization phase. Once the operation is completed, the splash screen is removed from the screen and the Frame redirects the user to the main page of the app. As best practices, the app’s initialization should be as quickest as possible: if the operation isn’t completed within 10 seconds, the app will be terminated by the OS. However, it’s not uncommon that the app may need more than 10 seconds to be ready, especially if the application’s data has to be downloaded from a remote source (like a REST service). To avoid the app to be terminated by the OS, one of the best practices is to avoid loading the data in the App class, but to perform it directly in the main page of the app. This way, the initialization phase will be very quick and the main page will immediately take control of the app. However, since the app is now ready and the initialization operation is completed, the OS won’t try to kill the app anymore, even if the main page would need more than 10 seconds to load all the data.</p>
+<p>This approach works great, but often it doesn’t provide a good user experience: the user is redirected to the main page of the app which, however, will be empty and it will display just a loading message, until all the data is ready to be displayed. To improve the UX many applications have introduced the concept of <strong>extended splash screen</strong>: after that the basic initialization is completed, the user will be redirected to another page of the app which will look exactly like the splash screen. The difference here is that, since we aren’t talking anymore about a static image but we’re dealing with a real page, we can add additional UI elements to notify to the user that a loading operation is in progress (like a <strong>ProgressBar</strong> or a <strong>ProgressRing</strong> control). If you want to learn more about this topic, the MSDN documentation offers some guidance on how to implement an extended splash screen at <a href="https://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh868191.aspx">https://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh868191.aspx</a></p>
+<p>As you can see in the document, there’s a bit of work to do, other than just creating the page that will act as extended splash screen. Template10 simplifies this approach, by offering a class that takes care of handling the transition between splash screen –&gt; extended splash screen –&gt; first page of the app. Let’s see how to use it.</p>
+<p>The first step is to create the splash screen itself, by adding a new <strong>UserControl</strong> to your application. You have the freedom to add everything you want in this control. However, since the goal of this control is to hide the transition from the static splash screen, typically the first thing you want to add is an <strong>Image</strong> control that displays the same image used as splash screen. The following sample shows a control where the image is placed inside a <strong>Canvas</strong> with the same background color of the image. In addition, we add a <strong>ProgressRing</strong> control to notify to the user that a loading operation is in progress.</p>
+<pre class="brush: xml;">&lt;UserControl
+    x:Class=&quot;BasicSample.Views.SplashScreenView&quot;
+    xmlns=&quot;http://schemas.microsoft.com/winfx/2006/xaml/presentation&quot;
+    xmlns:x=&quot;http://schemas.microsoft.com/winfx/2006/xaml&quot;
+    xmlns:d=&quot;http://schemas.microsoft.com/expression/blend/2008&quot;
+    xmlns:mc=&quot;http://schemas.openxmlformats.org/markup-compatibility/2006&quot;
+    mc:Ignorable=&quot;d&quot;&gt;
+
+    &lt;Grid&gt;
+        &lt;Canvas x:Name=&quot;MyCanvas&quot; HorizontalAlignment=&quot;Stretch&quot; VerticalAlignment=&quot;Stretch&quot; Background=&quot;#0971C3&quot;&gt;
+            &lt;Image x:Name=&quot;MyImage&quot; Stretch=&quot;None&quot; Source=&quot;/Assets/SplashScreen.png&quot; /&gt;
+        &lt;/Canvas&gt;
+        &lt;ProgressRing VerticalAlignment=&quot;Bottom&quot; HorizontalAlignment=&quot;Center&quot; Width=&quot;50&quot; Height=&quot;50&quot; IsActive=&quot;True&quot; Foreground=&quot;White&quot;
+                      Margin=&quot;0, 0, 0, 100&quot;/&gt;
+    &lt;/Grid&gt;
+&lt;/UserControl&gt;
+
+</pre>
+<p>In code behind we use the <strong>SplashScreen</strong> class (which returns some important information about the image, like the size and the position) to configure the <strong>Image</strong> control in the same way. This way, the user won’t notice the transition from the real splash screen to the extended one.</p>
+<pre class="brush: csharp;">public sealed partial class SplashScreenView : UserControl
+{
+    public SplashScreenView(SplashScreen splashScreen)
+    {
+        this.InitializeComponent();
+        Action resize = () =&gt;
+        {
+            MyImage.Height = splashScreen.ImageLocation.Height;
+            MyImage.Width = splashScreen.ImageLocation.Width;
+            MyImage.SetValue(Canvas.TopProperty, splashScreen.ImageLocation.Top);
+            MyImage.SetValue(Canvas.LeftProperty, splashScreen.ImageLocation.Left);
+        };
+        Window.Current.SizeChanged += (s, e) =&gt; resize();
+        resize();
+    }
+}
+
+</pre>
+<p>The resize and reposition operations are defined into an <strong>Action</strong> which, other than being executed when the user control is initialized, is connected also to the <strong>SizeChanged</strong> event, which is triggered when the size of the app’s window changes. It’s required since, when the app runs on a desktop, the user is able to resize the window at any time and, consequently, the splash screen needs to readapt itself.</p>
+<p>Now that we have created our custom control, we are ready to use it as a splash screen, thanks to the <strong>SplashFactory</strong> class provided by the <strong>BootStrapper:</strong></p>
+<pre class="brush: csharp;">public App()
+{
+    InitializeComponent();
+    SplashFactory = e =&gt; new SplashScreenView(e);
+}
+
+</pre>
+<p><strong>SplashScrenView</strong> is the name of the UserControl we have just created, while <strong>e</strong> is the instance of the <strong>SplashScreen</strong> class that we have passed to the control’s constructor (it’s the one we’ve used to calculate the size and the position of the image).</p>
+<p>Now we’re ready to test it: as soon as the application takes more than a few seconds to initialize, the user will be redirected to the extended splash screen and, only at the end of the loading process, to the main page of the app. If you want to simulate a heavy data loading to test the splash screen, you can add a delay in the <strong>OnStartAsync() </strong>method, before the navigation to the main page is performed, like in the following sample:</p>
+<pre class="brush: csharp;">sealed partial class App : Template10.Common.BootStrapper
+{
+    public App()
+    {
+        InitializeComponent();
+        SplashFactory = e =&gt; new SplashScreenView(e);
+    }
+
+    public override async Task OnStartAsync(StartKind startKind, IActivatedEventArgs args)
+    {
+ await Task.Delay(TimeSpan.FromSeconds(5));
+        NavigationService.Navigate(typeof(MainPage));
+    }
+}
+
+</pre>
+<p>Once the initialization is completed, the bootstrapper will invoke the <strong>OnStartAsync()</strong> method and, until it’s triggered the navigation to the main page of the page, the extended splash screen will be displayed. In this sample, since we’ve added a 5 second delay, the splash screen will be displayed for 5 seconds before the user will see the main page.</p>
+<h1>Navigation</h1>
+<p>Another important feature offered by Template10 is the automatic handling of the page stack. If you already have some experience in developing Windows Store apps for Windows and Windows Phone 8.1, you’ll know that navigation management is one of the main differences between the two platforms. On Windows Phone, you don’t have to add any visual element in the user interface to allow the user to go back to the previous page of the app, since every device has a hardware Back button. However, the same doesn’t apply on Windows, since there is no Back button on a desktop or on a tablet.</p>
+<p>Windows 10 has changed this behavior; also the desktop version, in fact, offers a build-in management of the Back button, by providing a virtual back button which can be placed in different positions, based on the scenario:</p>
+<ol>
+<li>If the app is running in desktop mode, the Back button will be added in the app’s chrome, on the top right corner.
+<li>If the app is running in tablet mode, the Back button will be added in the system bar, between the Start and Cortana buttons.</li>
+</ol>
+<p>&nbsp;</p>
+<p><a href="http://blogs.msdn.com/cfs-file.ashx/__key/communityserver-blogs-components-weblogfiles/00-00-00-87-58/4118.3.png"><img style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; padding-right: 0px; border-top-width: 0px" border="0" alt="" src="http://blogs.msdn.com/resized-image.ashx/__size/550x0/__key/communityserver-blogs-components-weblogfiles/00-00-00-87-58/4118.3.png" width="428" height="593"></a></p>
+<p>&nbsp;</p>
+<p><a href="http://blogs.msdn.com/cfs-file.ashx/__key/communityserver-blogs-components-weblogfiles/00-00-00-87-58/6318.2.png"><img border="0" alt="" src="http://blogs.msdn.com/resized-image.ashx/__size/300x0/__key/communityserver-blogs-components-weblogfiles/00-00-00-87-58/6318.2.png" width="441" height="147"></a></p>
+<p>Typically, in a standard application, it’s up to the developer to handle this feature, by using the <strong>SystemNavigationManager</strong> class, which provides the required APIs to handle the visibility of the button or the navigation events. Template10, instead, automatically enables this management on every device family. Consequently:</p>
+<ul>
+<li>When the application is running on the desktop and the page stack isn’t empty, on the top right corner the virtual Back button will be visible. If, instead, the stack is empty (for example, because the user is on the first page), the button will be automatically hidden.
+<li>When the application is running on a mobile device, pressing the hardware Back button will automatically redirect the user to the previous page of the app or, if the stack is empty, to the Start screen of the device.</li>
+</ul>
+<p>If we want to disable this behavior (for example, because we want to handle the navigation by ourselves, by adding a button in the UI) we can set the <strong>ShowShellButton</strong> property of the<strong> BootStrapper</strong> class to <strong>false</strong>:</p>
+<pre class="brush: csharp;">public App()
+{
+    InitializeComponent();
+    ShowShellBackButton = false;
+}
+
+</pre>
+<p>When this option is disabled, you will notice that the virtual Back button in the app’s chrome will never be displayed. </p>
+<h1></h1>
+<h1>In the next post</h1>
+<p>In this post we’ve learned some of the basic concepts of Template10 and which are some of the features that we can start to use, right away, to improve our application. We’ve just scratched the surfaced and, in the next posts, we’re going to see the “true power” of Template10, especially when it’s used in combination with the MVVM pattern. If, in the meanwhile, you want to start doing experiments with Template10, you can use the samples that are provided on the GitHub repository. Happy coding!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-the-basics/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/template10-a-new-template-to-create-universal-windows-apps-the-basics/</feedburner:origLink></item>
+		<item>
+		<title>The new background features in Windows 10</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/BfZP8mJjddA/</link>
+		<comments>http://wp.qmatteoq.com/the-new-background-features-in-windows-10/#comments</comments>
+		<pubDate>Mon, 10 Aug 2015 15:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[Universal Apps]]></category>
+		<category><![CDATA[Windows]]></category>
+		<category><![CDATA[Windows 10]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6429</guid>
+		<description><![CDATA[If you already have some experience in developing Universal Windows apps for Windows and Windows Phone 8.1, you should already be familiar with the “application lifecycle” concept. Compared to the traditional desktop model, where the application lifecycle is quite simple (basically, one app is able to run and perform tasks until it’s closed), in the [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>If you already have some experience in developing Universal Windows apps for Windows and Windows Phone 8.1, you should already be familiar with the “application lifecycle” concept. Compared to the traditional desktop model, where the application lifecycle is quite simple (basically, one app is able to run and perform tasks until it’s closed), in the mobile world things are a bit different. A mobile device like a smartphone, in fact, needs to handle many requirements which aren’t common in the desktop world, like battery usage, limited available memory, etc.
+<p>Consequently, Universal Windows apps (both on 8.1 and 10) use a different lifecycle model, which can be summarized with the following image:
+<p>&nbsp;
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/08/clip_image002.jpg"><img title="clip_image002" style="border-top: 0px; border-right: 0px; background-image: none; border-bottom: 0px; padding-top: 0px; padding-left: 0px; border-left: 0px; display: inline; padding-right: 0px" border="0" alt="clip_image002" src="http://wp.qmatteoq.com/wp-content/uploads/2015/08/clip_image002_thumb.jpg" width="471" height="269"></a><em></em>
+<p><em></em>&nbsp;
+<p>When an application is opened, it enters into a state called <strong>running</strong>: in this state, it’s able to use memory, CPU, sensors and whatever feature is available on the device. As soon as the app is <strong>suspended</strong> (because the user has pressed the Start button or has tapped on a notification sent by another application), after 5 seconds the process is “frozen” in memory. It means that the process will be kept in the device’s RAM memory, but it won’t be able to perform any operation. As such, every device’s resource (CPU, the camera, sensors, etc.) will be available to every other application that the user will decide to launch next. When the user decides to return to our application, the <strong>resuming</strong> event is triggered: the process is awaken and the application can use again all the device’s resources.
+<p>It may happen, however, that the resources are running low: for example, the user starts to open a lot of applications or he may have suspended one or two apps which use a lot of memory (like a game). In this case, when a new application is opened, the device may not have enough memory to manage it: consequently, the operating system has the chance to <strong>terminate</strong> the older applications to free some memory. In this scenario, it’s the developer’s job to save the state of the application, during the suspension phase, in order to restore it in case the app is reopened after a termination. The goal of this approach is to give to the user the impression that the app has never been closed: the termination by the operating system should be completely transparent for him.<br />
+<h3></h3>
+<h3>Perform operations in background: background tasks</h3>
+<p>As you can imagine after reading how the application’s lifecycle works, Universal Windows apps don’t have the chance to perform operations when they’re suspended. The process, in fact, is “frozen” and, as such, it can’t perform any activity which involves the usage of CPU, network, etc.</p>
+<p>To allow developers to handle the requirement to perform, somehow, some operations even when the app is suspended, the Windows Runtime has introduced the concept of <strong>background task. </strong>They are separate projects from the main one that contains the application, but they belong to the same solution and they access to the same app’s context (so, for example, a background task can access to the same local storage used by the application). Background tasks are usually made by a single class, which contains the code that is executed when it’s scheduled by operating system, even if the main application isn’t running.</p>
+<p>Here is a sample definition of a background task:</p>
+<pre class="brush: csharp;">using Windows.ApplicationModel.Background; 
+
+namespace Tasks 
+{ 
+    public sealed class ExampleBackgroundTask : IBackgroundTask 
+    { 
+
+        public void Run(IBackgroundTaskInstance taskInstance) 
+        { 
+
+        } 
+
+    } 
+} 
+
+</pre>
+<p>A background task is made by a class, which implements the <strong>IBackgroundTask</strong> interface and manages a method called <strong>Run()</strong>, which is invoked when the task is activated. </p>
+<p>Background tasks are projects which type is Windows Runtime Component and they’re connected to the concept of <strong>trigger</strong>, which are events that you can subscribe to invoke a background task. There are many types of triggers in Windows Runtime: they can be used to manage periodic requirements (for example, if the task needs to run every 30 minutes), system events (for example, the user has locked / unlocked the device) or the communications with other devices (there is a set of triggers to interact with Bluetooth Low Energy devices).</p>
+<p>I won’t go deep about background tasks in this post, since the way they work has unchanged moving from Windows 8.1 to Windows 10. You will find a wide set of new triggers, but the base concepts that drive the development are the same. If you’re interested into this subject, you can refer to the MSDN documentation which is available at <a href="https://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh977056.aspx">https://msdn.microsoft.com/en-us/library/windows/apps/xaml/hh977056.aspx</a> </p>
+<h3>Keep the application active when it’s suspended</h3>
+<p>The new feature added in Windows 10, which I’m going to detail in this post, is the <strong>ExtendedExecutionSession</strong> class, which can be used to support two new scenarios:</p>
+<ol>
+<li>The application needs to save some data or complete a pending operation before it’s suspended and the 5 seconds timeframe isn’t enough.
+<li>The application needs to continue the execution even when it’s suspended, for example to keep track of the user’s position (a fitness app, a turn by turn navigator, etc.)</li>
+</ol>
+<p>Let’s see how to handle both scenarios.</p>
+<h4></h4>
+<h4>Complete a pending operation</h4>
+<p>This scenario is managed inside the event that the <strong>App</strong> class provides to handle the suspension. In the standard definition of this class (which is declared inside the <strong>App.xaml.cs</strong> file) you’ll find the following lines of code:</p>
+<pre class="brush: csharp;">private void OnSuspending(object sender, SuspendingEventArgs e) 
+{ 
+    var deferral = e.SuspendingOperation.GetDeferral(); 
+    deferral.Complete(); 
+}
+
+</pre>
+<p>By default, this code doesn’t do anything: it just asks for a deferral, which is a way to handle asynchronous operations inside the suspension event. Without using the deferral, the beginning of an asynchronous operation may cause the immediate termination of the app by the operating system, since it’s performed on a different thread than the main one. </p>
+<p>Inside the <strong>OnSupending()</strong> method we can use the <strong>ExtendedExecutionSession</strong> class to ask for more time, so that we have the chance to complete the running operation. Here is a sample code:
+<pre class="brush: csharp;">private async void OnSuspending(object sender, SuspendingEventArgs e) 
+{ 
+    var deferral = e.SuspendingOperation.GetDeferral(); 
+    var extendedSession = new ExtendedExecutionSession(); 
+    extendedSession.Reason = ExtendedExecutionReason.SavingData; 
+    extendedSession.Description = "Complete synchronization"; 
+
+    ExtendedExecutionResult result = await extendedSession.RequestExtensionAsync(); 
+
+    if (result == ExtendedExecutionResult.Allowed) 
+    { 
+        UploadCompleteData(); 
+    } 
+    else 
+    { 
+        UploadBasicData(); 
+    } 
+
+    deferral.Complete(); 
+} 
+</pre>
+<p>When we create a new <strong>ExtendedExecutionSession</strong> instance, we have to define: </p>
+<ol>
+<li>The reason why we need that the running operation continues even after the suspension. In our scenario, we need to use the <strong>SavingData</strong> value of the <strong>ExtendedExecutionReason</strong> enumartor.
+<li>A description that briefly summarize the operation we’re going to perform. It’s a simple string.</li>
+</ol>
+<p>Then we can call the <strong>RequestExtensionsAsync(). </strong>As you can imagine from the name of the method, this operation doesn’t guarantee that the request will be accepted; the operating system could decide to deny it, according to the available resources. Consequently, it’s very important to check the result of the operation, which type is <strong>ExtendedExecutionResult.</strong> Only if the result is <strong>Allowed</strong>, we are authorized to execute an operation that could take more than 5 seconds to be completed; otherwise, instead, we need to apply a workaround to satisfy the 5 seconds constraint.</p>
+<p>It’s important to remind that this approach doesn’t allow an infinite execution time: in case resources are running low, the operating system could terminate the running activity. </p>
+<h3></h3>
+<h4>Keep the application running in background</h4>
+<p>The second feature provided by the <strong>ExetendedExecutionSession</strong> class offers a bit more flexibility: when the application is suspended, in fact, it will be kept alive in background: the process won’t be frozen, but it will be able to keep performing operations, handle events, etc. It’s like if the application in foreground, except that it isn’t visible to the user. It’s a feature which can be very useful for location tracking apps: for example, a fitness app could leverage this approach to track the user’s run even if the phone is locked and placed in the user’s pocket.</p>
+<p>This is the reason why the <strong>ExtendedExecutionSession</strong> class identifies this approach by assigning the <strong>LocationTracking</strong> value to the <strong>Reason</strong> property. Moreover, this feature requires that the <strong>Location</strong> capability is declared in the manifest file. To be honest, the operating system doesn’t force you to use the location APIs to use this feature: however, it’s important to keep in mind that the user, in the Store page, will see that your application is accessing to the user’s location, even if you aren’t actually doing it. As such, think twice before choosing to go down this path.</p>
+<p>The main difference with the previous scenario (completing a pending operation) is the position in code when the <strong>ExtendedExceutionSession</strong> class is used: if, in the code sample we’ve previously seen, we used it inside the <strong>OnSuspending()</strong> method of the <strong>App</strong> class, now instead we need to ask the permission to the operating system to run in background as soon as possible. Typically, this is done when the main page of the application is loaded, so the <strong>OnNavigatedTo()</strong> or the <strong>Loaded</strong>()<strong> </strong>events are good candidates.</p>
+<p>Here is a code sample:</p>
+<pre class="brush: csharp;">protected override async void OnNavigatedTo(NavigationEventArgs e) 
+{ 
+    if (e.NavigationMode == NavigationMode.New) 
+    { 
+        var extendedSession = new ExtendedExecutionSession(); 
+        extendedSession.Reason = ExtendedExecutionReason.LocationTracking; 
+        extendedSession.Description = "Location tracking"; 
+
+        ExtendedExecutionResult result = await extendedSession.RequestExtensionAsync(); 
+        if (result == ExtendedExecutionResult.Allowed) 
+        { 
+            Debug.WriteLine("Background execution approved"); 
+        } 
+        else 
+        { 
+            Debug.WriteLine("Background execution denied"); 
+        } 
+    } 
+} 
+
+</pre>
+<p>The first line of code makes sure that the initialization is made only when the navigation mode is <strong>New</strong>, which means that the page is loaded for the first time: this way, we can avoid that the initialization is repeated every time that the user, from an inner page, navigates back to the main one. If we try to initialize the <strong>ExtendedExecutionSession</strong> object multiple times, in fact, we’ll get an exception.</p>
+<p>The rest of the code is pretty much the same we’ve seen in the previous scenario, except that:</p>
+<ol>
+<li>We’re setting the <strong>Reason</strong> property of the <strong>ExtendedExecutionSession</strong> class to <strong>LocationTracking</strong>.</li>
+<li>Also in this case it’s useful to check the result of the <strong>RequestExtensionAsync()</strong> method, but only for logging or warning purposes. In fact, in case the app is allowed for background execution, we won’t have anything special to do: the app will simply continue to run, like if it has never been suspended. It’s important to highlight that one of the causes that may lead to a denied execution is that the <strong>Location</strong> capability is missing in the manifest file.</li>
+</ol>
+<h4>It’s important to highlight that, even if the application is indeed running in background, it’s not able to interact with the UI thread: if you need to show any information to the user, you need to rely on the features provided by the platform, like notifications.</h4>
+<p>The following sample code shows how to leverage notifications in a background execution scenario:</p>
+<pre class="brush: csharp;">public sealed partial class MainPage : Page
+{
+    public MainPage()
+    {
+        this.InitializeComponent();
+    }
+
+    protected override async void OnNavigatedTo(NavigationEventArgs e)
+    {
+        if (e.NavigationMode == NavigationMode.New)
+        {
+            var extendedSession = new ExtendedExecutionSession();
+            extendedSession.Reason = ExtendedExecutionReason.LocationTracking;
+            extendedSession.Description = "Location tracking";
+
+            ExtendedExecutionResult result = await extendedSession.RequestExtensionAsync();
+            if (result == ExtendedExecutionResult.Allowed)
+            {
+                Debug.WriteLine("Background execution approved");
+            }
+            else
+            {
+                Debug.WriteLine("Background execution denied");
+            }
+
+            Geolocator locator = new Geolocator();
+            locator.DesiredAccuracyInMeters = 0;
+            locator.MovementThreshold = 500;
+            locator.DesiredAccuracy = PositionAccuracy.High;
+            locator.PositionChanged += Locator_PositionChanged;
+        }
+    }
+
+    private void Locator_PositionChanged(Geolocator sender, PositionChangedEventArgs args)
+    {
+        string xml = $@"
+            &lt;toast activationType='foreground' launch='args'&gt;
+                &lt;visual&gt;
+                    &lt;binding template='ToastGeneric'&gt;
+                        &lt;text&gt;This is a toast notification&lt;/text&gt;
+                        &lt;text&gt;Latitude: {args.Position.Coordinate.Point.Position.Latitude} - Longitude: {args.Position.Coordinate.Point.Position.Longitude}&lt;/text&gt;
+                    &lt;/binding&gt;
+                &lt;/visual&gt;
+            &lt;/toast&gt;";
+
+        XmlDocument doc = new XmlDocument();
+        doc.LoadXml(xml);
+
+        ToastNotification notification = new ToastNotification(doc);
+        ToastNotifier notifier = ToastNotificationManager.CreateToastNotifier();
+        notifier.Show(notification);
+    }
+}
+</pre>
+<p>After subscribing for background execution, we initialize the <strong>Geolocator</strong> class and we subscribe to the <strong>PositionChanged</strong> event, which is triggered every time the geo localization services detects a new position. When this event happens, we prepare the payload of a toast notification with the info about the detected longitude and latitude and then we display it, using the <strong>ToastNotification</strong> and <strong>ToastNotificationManager</strong> classes. We can easily test this application using the Windows 10 Mobile emulator: just open the app and, by leveraging the Location simulator in the Additional tools, just place a pushpin in a random map location. Every time you’ll perform this operation, you’ll see a notification with the coordinate of the selected place. However, since we requested background execution, the <strong>PositionChanged</strong> event handler will be triggered even if the app is suspended. Let’s repeat the same test (placing random pushpins on the map) but, before, suspend the app: you’ll notice that the notifications will be displayed anyway, since the app is indeed still running, even if it’s not visible.</p>
+<p>As you can see, this features allows a lot of flexibility; consequently, there are some constraints to prevent that an app could negatively affect the battery life or the performances of the devices. First, only one application at a time can leverage the background execution; if the user opens another application that uses the same feature, the already running one will be stopped and suspended. In addition, also in this case the operating system continuously monitors the available system resources: if they are running low, it will be able to kill our running app and suspend it.</p>
+<h3></h3>
+<h3>Wrapping up</h3>
+<p>The new background execution feature is very simple to manage but, at the same time, very powerful and it opens up scenarios that it wasn’t possible to support in a Windows or Windows Phone 8.1 application. You can find with a sample project that shows how to use the <strong>ExtendedExecutionSession</strong> API on my GitHub repository <a title="https://github.com/qmatteoq/Windows10-Samples" href="https://github.com/qmatteoq/Windows10-Samples">https://github.com/qmatteoq/Windows10-Samples</a>. Happy coding!</p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/the-new-background-features-in-windows-10/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/the-new-background-features-in-windows-10/</feedburner:origLink></item>
+		<item>
+		<title>Xamarin Forms for Windows Phone devs – Dependency injection with MVVM Light</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/yJE3eiWeW00/</link>
+		<comments>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-dependency-injection-with-mvvm-light/#comments</comments>
+		<pubDate>Tue, 27 Jan 2015 14:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[wpdev]]></category>
+		<category><![CDATA[Xamarin]]></category>
+		<category><![CDATA[Windows Phone]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6388</guid>
+		<description><![CDATA[In the previous post we’ve seen how Xamarin Forms offers an easy way to manage dependency injection, so that you can support the different ways how some features are managed on every platform. This way, you can use a common interface in your shared project and then have three different concrete implementation of that interface, [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>In the <a href="http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-dependency-injection/" target="_blank">previous post</a> we’ve seen how Xamarin Forms offers an easy way to manage dependency injection, so that you can support the different ways how some features are managed on every platform. This way, you can use a common interface in your shared project and then have three different concrete implementation of that interface, one for each platform. In the previous sample we’ve used a <strong>PopupService</strong>, which is a class that is used to display a popup to the user by taking advantage of the specific APIs offered for each platform.</p>
+<p>In this post, we’re going to see how to combine this approach in a MVVM project created using MVVM Light.</p>
+<h3>One project, two dependency injection’s containers</h3>
+<p>When we talked about how to create a Xamarin Forms project using MVVM Light, we’ve seen that the toolkit created by Laurent Bugnion offers a dependency injection’s container called <strong>SimpleIoC. </strong>Using a dependency container in a MVVM application is very useful, because it makes much easier to switch the implementation of a class we want to use in a ViewModel. In the previous post, we’ve seen that we are able to easily achieve this goal by using a code similar to the following one:</p>
+<pre class="brush: csharp;">public MainViewModel()
+{
+    IPopupService popupService = container.Resolve&lt;IPopupService&gt;();
+    popupService.ShowPopup("Sample title", "Sample message");
+}
+</pre>
+<p>However, this code still requires you to go in each class and manually get a reference to the concrete implementation by using the container (in this sample, we’re using Unity as dependency injection library, so we use the <strong>Resolve&lt;T&gt;() </strong>method of the <strong>UnityContainer</strong> class.</p>
+<p>Thanks to dependency injection, there’s a smarter way to do this: by registering both the ViewModel and the service in the container, like in the following sample.</p>
+<pre class="brush: csharp;">public class ViewModelLocator
+{
+    static ViewModelLocator()
+    {
+        ServiceLocator.SetLocatorProvider(() =&gt; SimpleIoc.Default);
+        SimpleIoc.Default.Register&lt;IPopupService, PopupService&gt;();
+        SimpleIoc.Default.Register&lt;MainViewModel&gt;();
+    }
+
+    /// &lt;summary&gt;
+    /// Gets the Main property.
+    /// &lt;/summary&gt;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
+        "CA1822:MarkMembersAsStatic",
+        Justification = "This non-static member is needed for data binding purposes.")]
+    public MainViewModel Main
+    {
+        get
+        {
+            return ServiceLocator.Current.GetInstance&lt;MainViewModel&gt;();
+        }
+    }
+}
+</pre>
+<p>As you can see, in the <strong>ViewModelLocator</strong> definition we’ve registered not only the <strong>MainViewModel</strong> (like we did in the previous post) but also the <strong>PopupService</strong> class, which is connected to the <strong>IPopupService</strong> interface. Thanks to this code, now we are able to get a reference to the <strong>PopupService</strong> class simply by adding an <strong>IPopupService</strong> paramter in the ViewModel’s constructor, like in the following sample:</p>
+<pre class="brush: csharp;">public class MainViewModel : ViewModelBase
+{
+   private readonly IPopupService _popupService;
+
+   public MainViewModel(IPopupService popupService)
+   {
+       _popupService = popupService;
+   }
+}
+</pre>
+<p>The dependency injection mechanism will take care of automatically injecting, into the <strong>IPopupService</strong> paramater, the concrete implementation (the <strong>PopupService</strong>) class we’ve registered in the container in the <strong>ViewModelLocator</strong>.</p>
+<h3>How to combine the two approaches</h3>
+<p>However, <a href="http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-dependency-injection/" target="_blank">in the previous post</a>, we’ve seen that Xamarin Forms offers another approach to manage dependency injection: by decorating the concrete implementation of the interface (in our case, the <strong>PopupService</strong> class) with an attribute, that allows us to use a single interface in our shared project and have three different implementations in each platform’s specific project. This way, we can deal with the fact that some features are in common across every platform (like displaying a popup or geo localizing the user) but they are implemented with different APIs and approaches.</p>
+<p>How can we combine this approach with the standard one, so that we take the best of both worlds? Our goal is to have the MVVM Light container to automatically inject, in every ViewModel, the specific <strong>PopupService</strong> implementation we’ve included into every platform’s specific project. It’s easy, thanks to a feature offered basically by each dependency injection’s library, which is a method to register a specific instance of a class into the container. This way, when we need a concrete implementation of a class, the container will return us that specific instance, instead of creating a new one on the fly.</p>
+<p>The following code shows how we can achieve our goal by combining the code we’ve seen in this post and in the previous one:</p>
+<pre class="brush: csharp;">public class ViewModelLocator
+{
+    static ViewModelLocator()
+    {
+        ServiceLocator.SetLocatorProvider(() =&gt; SimpleIoc.Default);
+        IPopupService popupService = DependencyService.Get&lt;IPopupService&gt;();
+        SimpleIoc.Default.Register&lt;IPopupService&gt;(() =&gt; popupService);
+        SimpleIoc.Default.Register&lt;MainViewModel&gt;();
+    }
+
+    /// &lt;summary&gt;
+    /// Gets the Main property.
+    /// &lt;/summary&gt;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
+        "CA1822:MarkMembersAsStatic",
+        Justification = "This non-static member is needed for data binding purposes.")]
+    public MainViewModel Main
+    {
+        get
+        {
+            return ServiceLocator.Current.GetInstance&lt;MainViewModel&gt;();
+        }
+    }
+}
+</pre>
+<p>Unlike in the previous sample, where we generically registered the <strong>PopupService</strong> class for the <strong>IPopupService</strong> interface, in this case we register a specific instance, which we have retrieved using the <strong>DependencyService</strong> class offered by Xamarin Forms. This way, we make sure that the <strong>IPopupService</strong> object we get in return is the specific implementation for the platform where the app is running. Then, we proceed to register this instance in the <strong>SimpleIoc</strong> container, by passing it as parameter of the <strong>Register&lt;T&gt;()</strong> method.</p>
+<p>That’s all: now, in our <strong>MainViewModel</strong>, the container will automatically inject, into the constructor’s parameter, the proper implementation for the current platform.</p>
+<h3>Wrapping up</h3>
+<p>In this post we’ve seen how to combine a standard dependency injection approach (which is useful to manage the ViewModel dependencies) with the Xamarin Forms one (which is useful to manage platform specific implementations of the same feature). You can play with a working sample by downloading the source code published on GitHub: <a title="https://github.com/qmatteoq/XamarinFormsSamples" href="https://github.com/qmatteoq/XamarinFormsSamples">https://github.com/qmatteoq/XamarinFormsSamples</a></p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-dependency-injection-with-mvvm-light/feed/</wfw:commentRss>
+		<slash:comments>2</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-dependency-injection-with-mvvm-light/</feedburner:origLink></item>
+		<item>
+		<title>Xamarin Forms for Windows Phone devs – Dependency injection</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/sUjHawRXgYc/</link>
+		<comments>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-dependency-injection/#comments</comments>
+		<pubDate>Fri, 23 Jan 2015 14:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[Xamarin]]></category>
+		<category><![CDATA[Windows Phone]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6377</guid>
+		<description><![CDATA[If you’re already worked with Windows Phone and Windows Store applications and, especially, with the MVVM pattern, you should be familiar with the dependency injection concept. In a typical application, when you need to use a class, you simply create a new instance, like in the following sample: private void OnButtonClicked(object sender, EventArgs e) { [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>If you’re already worked with Windows Phone and Windows Store applications and, especially, with the MVVM pattern, you should be familiar with the <strong>dependency injection</strong> concept. In a typical application, when you need to use a class, you simply create a new instance, like in the following sample:</p>
+<pre class="brush: csharp;">private void OnButtonClicked(object sender, EventArgs e)
+{
+    PopupService popupService = new PopupService();
+    popupService.ShowPopup("Sample title", "Sample message");
+}
+</pre>
+<p>This way, objects are created at compile time. However, when you work with the MVVM pattern, this approach has a downside. Let’s say that you’re using the <strong>PopupService</strong> in multiple classes (like ViewModels) and, suddenly, you need to change his implementation with a new one. With the previous approach, you are forced to go in each class where you use the <strong>PopupService</strong> and change the implementation with the new one.</p>
+<p>With the dependency injection approach, instead, objects are registered inside a <strong>container</strong>, which is a special class that takes care of dispatching the objects when they’re required. Typically, with this approach, every class is described by an interface. For example, the <strong>PopupService</strong> class can be described with an interface called <strong>IPopupService</strong>, like in the following sample:</p>
+<pre class="brush: csharp;">public interface IPopupService
+{
+    void ShowPopup(string title, string message);
+}
+</pre>
+<p>Then, when the application starts, we specify for each interface which is the concrete implementation we want to use in the application, like in the following code (keep in mind that it’s just a sample, there are multiple libraries to implement dependency injection, each of them with its APIs and methods):</p>
+<pre class="brush: csharp;">public App() 
+{
+    IUnityContainer container = new UnityContainer();
+    container.RegisterType&lt;IPopupService, PopupService&gt;();
+}
+</pre>
+<p>In the end, whenever a class needs to use a <strong>PopupService</strong> object, instead of simply creating a new instance, it asks to the container to return the registered one, like in the following sample:</p>
+<pre class="brush: csharp;">private void OnButtonClicked(object sender, EventArgs e)
+{
+    IPopupService popupService = container.Resolve&lt;IPopupService&gt;();
+    popupService.ShowPopup("Sample title", "Sample message");
+}
+</pre>
+<p>The advantage of this approach should be clear: whenever we need to change the implementation of the <strong>IPopupService</strong> interface, it’s enough to change the concrete implementation of the interface that is registered in the container, like:</p>
+<pre class="brush: csharp;">public App() 
+{
+    IUnityContainer container = new UnityContainer();
+    container.RegisterType&lt;IPopupService, FakePopupService&gt;();
+}
+
+</pre>
+<p>Automatically, all the classes that are using the <strong>PopupService</strong> class will immediately start to use the new implementation, called <strong>FakePopupService</strong>, simply by changing one line of code.</p>
+<h3></h3>
+<h3>Dependency injection and Xamarin Forms</h3>
+<p>Dependency injection becomes very useful when you work with Xamarin Forms: the purpose of this technology is to allow developers to share as much code as possible between the three different mobile platforms (iOS, Android and Windows Phone). The Xamarin technology was created with this purpose in mind, however Xamarin Forms takes this approach to the next level, by allowing developers to share not just business logic, but also the user interface. Xamarin Forms, in fact, uses a XAML based approach: the user interface is defined using XML, where each control is identified by a specific XML tag. The biggest difference with the standard XAML (which is supported only by Microsoft technologies, like Windows Phone or WPF) is that the controls are automatically translated into the native platform controls. This way, unlike with cross platform applications based on web technologies (which offer the same UI on all the platforms), we’ll be able to keep the UI consistent with the guidelines and the user interface of the platform.</p>
+<p>However, there are some scenarios which simply don’t fit the shared code approach. We can’t forget, in fact, that Xamarin, unlike web technologies, doesn’t provide a way to create the application just once and run it everywhere: one of the biggest pros of Xamarin, in fact, is that it allows developers to make use of every platform specific feature, unlike web applications that typically support only the features that are in common between every platform. Consequently, you still need to learn how Android and iOS development work if you want to create a real application. However, thanks to Xamarin, you won’t have to learn also a new language in the process: Xamarin, in fact, offers a way to use the native APIs with the familiar C# syntax.</p>
+<p>The same applies for Xamarin Forms: it offers a way to share not just business logic but also user interface code but, in the end, we still need to deal with the specific platform features and implementations. Let’s say, for example, that we want to add the <strong>PopupService</strong> class we’ve previously seen in our Xamarin Forms project, which offers a <strong>ShowPopup()</strong> method that displays an alert to the user. Each platform has a different way to display a popup message: for example, in Windows Phone you use the <strong>MessageBox</strong> class; on Android, you have the <strong>AlertDialog</strong> class; on iOS, instead, you use the <strong>UIAlertView</strong> class. However, we would love to have a way to use the <strong>ShowPopup()</strong> method in our shared page and, automatically, see it rendered on each platform with its specific code.</p>
+<p>Thanks to the dependency injection approach, we can: in the shared page we’re going to get a reference to the <strong>IPopupService</strong> class and to use the <strong>ShowPopup()</strong> method. At runtime, the dependency container will inject into the <strong>IPopupService</strong> object the specific implementation for the platform. However, compared to a regular dependency injection approach (like the one we’ve previously seen), there are some differences when we need to use it in Xamarin Forms.</p>
+<p><strong>Please note: </strong>the sample we’re going to see has been created just for demonstration purposes. Xamarin Forms, in fact, already offers a way to display popups to the user in a shared page, without having to deal with the different implementations for each platform.</p>
+<h3>One interface, multiple implementations</h3>
+<p>The first step is to create a common interface in the shared project, since it will be unique for each platform:</p>
+<pre class="brush: csharp;">public interface IPopupService
+{
+    void ShowPopup(string title, string message);
+}
+</pre>
+<p>Then we need a concrete implementation of this interface, one for each platform: we’re going to create in every specific platform project this time. For example, here is how it looks like the implementation in the Windows Phone project:</p>
+<pre class="brush: csharp;">public class PopupService: IPopupService
+{
+    public void ShowPopup(string title, string message)
+    {
+        MessageBox.Show(message, title, MessageBoxButton.OK);
+    }
+}
+</pre>
+<p>Here is, instead, how it looks like in the Android project:</p>
+<pre class="brush: csharp;">public class PopupService: IPopupService
+{
+    public void ShowPopup(string title, string message)
+    {
+        AlertDialog.Builder alert = new AlertDialog.Builder(Forms.Context);
+        alert.SetTitle(title)
+            .SetMessage(message)
+            .SetPositiveButton("Ok", (sender, args) =&gt;
+            {
+                Debug.WriteLine("Ok clicked"); 
+            })
+            .Show();
+    }
+}
+</pre>
+<p>The next step is to understand how to use the proper implementation for each platform. In our shared code, we’re going to simply use the interface, like in the following sample:</p>
+<pre class="brush: csharp;">private void OnButtonClicked(object sender, EventArgs e)
+{
+    IPopupService popupService = new PopupService();
+    popupService.ShowPopup("Sample title", "Sample message");
+}
+</pre>
+<p>However, this code won’t simply work: we don’t have a single implementation of the <strong>PopupService</strong> class, but three different implementations, each of them with its namespace. Also the previous dependency injection approach we’ve seen doesn’t solve our problem: when we register the implementation in the container, we still need to specify which is the concrete class to use and, in our scenario, we have three of them.</p>
+<p>Luckily, Xamarin Forms offers a smart approach to solve this situation: instead of manually registering the implementations into a container, we decorated the classes with an attribute. At runtime, automatically, Xamarin Forms will detect which is the interface connected to the implementation and will return to the application the proper object. To make it working, it’s enough to add the following attribute each concrete implementation of the class:</p>
+<pre class="brush: csharp;">using System.Windows;
+using DependencySample.Services;
+using DependencySample.WinPhone.Services;
+
+
+[assembly: Xamarin.Forms.Dependency(typeof(PopupService))]
+namespace DependencySample.WinPhone.Services
+{
+    public class PopupService: IPopupService
+    {
+        public void ShowPopup(string title, string message)
+        {
+            MessageBox.Show(message, title, MessageBoxButton.OK);
+        }
+    }
+}
+
+</pre>
+<p>The only variable part of the attribute is the parameter of the <strong>Dependency</strong> class: we need to specify the type of the current class (in our sample, it’s <strong>PopupService</strong>). Then, in our shared project, when we need to use the <strong>PopupService</strong>, we’re going to retrieve it using a Xamarin Forms class called <strong>DependencyService</strong>, like in the following sample:</p>
+<pre class="brush: csharp;">private void OnButtonClicked(object sender, EventArgs e)
+{
+    IPopupService popupService = DependencyService.Get&lt;IPopupService&gt;();
+    popupService.ShowPopup("Sample title", "Sample message");
+}
+</pre>
+<p>We use the <strong>Get&lt;T&gt;</strong> method, where <strong>T</strong> is the interface of the class we want to use. Automatically, Xamarin Forms will analyze the registered DLLs in the project and will return the concrete implementation that is available in the platform’s specific project. </p>
+<h3></h3>
+<h3>Wrapping up</h3>
+<p>In this post we’ve seen how to use the native dependency container that Xamarin Forms offers to developers. In the next post, we’ll see how to combine it with a traditional dependency injection approach, which comes useful when you’re developing a Xamarin Forms app using MVVM. You can download the sample project used in this post on GitHub: <a title="https://github.com/qmatteoq/XamarinFormsSamples" href="https://github.com/qmatteoq/XamarinFormsSamples">https://github.com/qmatteoq/XamarinFormsSamples</a></p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-dependency-injection/feed/</wfw:commentRss>
+		<slash:comments>4</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-dependency-injection/</feedburner:origLink></item>
+		<item>
+		<title>Xamarin Forms for Windows Phone devs – Using the MVVM pattern</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/ubg1uIs9bH0/</link>
+		<comments>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-using-the-mvvm-pattern/#comments</comments>
+		<pubDate>Tue, 20 Jan 2015 14:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[wpdev]]></category>
+		<category><![CDATA[Xamarin]]></category>
+		<category><![CDATA[Windows Phone]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6375</guid>
+		<description><![CDATA[We’ve already talked many times about the MVVM pattern on this blog and how to implement it in Windows Phone 8 apps using Caliburn Micro or in Universal Windows apps with Caliburn Micro and Prism. The Model-View-ViewModel pattern is very useful in XAML based projects, because the separation between logic and user interface gives many [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>We’ve already talked many times about the MVVM pattern on this blog and how to implement it in Windows Phone 8 apps using Caliburn Micro or in Universal Windows apps with Caliburn Micro and Prism. The Model-View-ViewModel pattern is very useful in XAML based projects, because the separation between logic and user interface gives many advantages in testability and maintainability. However, when we’re dealing with projects that target multiple platforms with a shared code base (like with Universal Windows apps), using the MVVM pattern is, more or less, a basic requirement: thanks to the separation between logic and user interface, it becomes easier to share a good amount of code with the different projects. </p>
+<p>Xamarin Forms makes no exceptions: applying the MVVM pattern is the best way to create a common codebase that can be shared among the iOS, Android and Windows Phone projects. In this post, we’ll see how to create a simple project using one of the most popular toolkits out there: MVVM Light.</p>
+<h3>Why MVVM Light?</h3>
+<p>MVVM Light is, for sure, the most simple and flexible MVVM toolkit available right now. It’s main advantage is simplicity: since it’s implementation is very basic, it can be easily ported from one platform to another. As you’re going to see in this post, if you have already worked with MVVM Light on other platforms, you’ll find yourself at home: except for some minor difference, the approach is exactly the same you would use in Windows Phone, Windows Store or WPF.</p>
+<p>However, the MVVM Light simplicity is also its weak point: compared to frameworks like Caliburn Micro or Prism, it misses all the infrastructure that is often required when you have to deal with platform specific features, like navigation, application lifecycle, etc. Consequently, as we’re going to see in the next posts, you may have the need to extend MVVM Light, in order to solve platform specific scenarios. In the next post I will show you the implementation I did to solve these problem: for now, let’s just focus on implementing a basic Xamarin Forms project with MVVM Light. This knowledge, in fact, it’s important to understand the next posts I’m going to publish.</p>
+<h3>Creating the first MVVM project</h3>
+<p>The first step is the same we’ve seen in a previous post: creating a new Xamarin.Forms Blank App. After we’ve checked that we’re using the latest Xamarin Forms version, we need to install also MVVM Light in the shared project: you’ll need to install the specific version for PCL libraries, which is <a title="http://www.nuget.org/packages/Portable.MvvmLightLibs/" href="http://www.nuget.org/packages/Portable.MvvmLightLibs/">http://www.nuget.org/packages/Portable.MvvmLightLibs/</a></p>
+<p>Now you’re ready to set up the infrastructure to create the application: let’s start by adding our first View and our first ViewModel. It’s not required, but to better design the application I prefer to create a folder for the views (called Views) and a folder for the ViewModels (called ViewModels). Then add a new Xamarin Forms page into the Views folder (called, for example, <strong>MainView.xaml</strong>) and a new simple class into the ViewModels folder (called, for example, <strong>MainViewModel.cs).</strong></p>
+<h3>The ViewModelLocator</h3>
+<p>One of the basic requirements in a MVVM application is to find a way to connect a View to its ViewModel: we could simply create a new instance of the ViewModel and assign it as data context of the page, but this way we won’t be able to use techniques like dependency injection to resolve ViewModels and the required services at runtime (we’ll talk again about this approach in the next post). The typical approach when you work with MVVM Light is to create a class called <strong>ViewModelLocator</strong>, which takes care of passing to every View the proper ViewModel. Here is how the <strong>ViewModelLocator</strong> class looks like in a Xamarin Forms project:</p>
+<pre class="brush: csharp;">public class ViewModelLocator
+{
+    static ViewModelLocator()
+    {
+        ServiceLocator.SetLocatorProvider(() =&gt; SimpleIoc.Default);
+        SimpleIoc.Default.Register&lt;MainViewModel&gt;();
+    }
+
+    /// &lt;summary&gt;
+    /// Gets the Main property.
+    /// &lt;/summary&gt;
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Performance",
+        "CA1822:MarkMembersAsStatic",
+        Justification = "This non-static member is needed for data binding purposes.")]
+    public MainViewModel Main
+    {
+        get
+        {
+            return ServiceLocator.Current.GetInstance&lt;MainViewModel&gt;();
+        }
+    }
+}
+</pre>
+<p>When the class is created, we register the default dependency injection provider we want to use: in this case, we use the native one offered by MVVM Light, called <strong>SimpleIoc</strong>. Then, we register in the container, by using the <strong>Register&lt;T&gt;() </strong>method, all the ViewModels and services we want to use. In this sample, we won’t use any service: we’ll see in the next post how to manage them; so we just register our <strong>MainViewModel</strong> in the container. The next step is to create a property that will be used by the View to request the proper ViewModel instance: we use again the dependency injection container, in this case to get a registered class, by using the <strong>GetInstance&lt;T&gt;()</strong> method (where <strong>T</strong> is the object’s type we need).</p>
+<p>Now we can use the ViewModelLocator to assing a ViewModel to its View: in our case, the <strong>MainView </strong>should be connected to the <strong>MainViewModel</strong>. In a Windows Phone app, this goal is typically achieved by declaring the <strong>ViewModelLocator</strong> as a global resource in the <strong>App</strong> class and then, in the XAML, assigning the proper property (in this case, <strong>Main</strong>) to the <strong>DataContext</strong> property of the page. This way, the ViewModel will be assigned as <strong>DataContext </strong>of the entire page and every nested control will be able to access to the commands and properties that are exposed by the ViewModel.</p>
+<p>However, this approach doesn’t work in Xamarin Forms, since we don’t have the concept of global resources: we don’t have an <strong>App.xaml</strong> file, where to declare resources that are shared across every page of the application. The easiest way to solve this problem is to declare the <strong>ViewModelLocator</strong> as a static property of the <strong>App</strong> class in the Xamarin Forms shared project, like in the following sample:</p>
+<pre class="brush: csharp;">public class App: Application
+{
+    public App()
+    {
+        this.MainPage = new MainView();
+    }
+
+    private static ViewModelLocator _locator;
+
+    public static ViewModelLocator Locator
+    {
+        get
+        {
+            return _locator ?? (_locator = new ViewModelLocator());
+        }
+    }
+}
+</pre>
+<p>This way, you’ll be able to connect the ViewModel to the View by using this static property in the code behind file of the page (in our case, the file <strong>MainView.xaml.cs</strong>):</p>
+<pre class="brush: csharp;">public partial class MainView
+{
+    public MainView()
+    {
+        InitializeComponent();
+        this.BindingContext = App.Locator.Main;
+    }
+}
+</pre>
+<p>You can notice one of the most important differences between the XAML in Windows Phone and the XAML in Xamarin Forms: the <strong>DataContext</strong> property is called <strong>BindingContext</strong>. However, its purpose is exactly the same: define the context of a control.</p>
+<h3></h3>
+<h3>Define the ViewModel</h3>
+<p>Creating a ViewModel it’s easy if you’ve already worked with MVVM Light, since the basic concepts are exactly the same. Let’s say that we want to create a simple applications where the user can insert his name: by pressing a button, the page will display a message to say hello to the user. Here is how the ViewModel to manage this scenario looks like:</p>
+<pre class="brush: csharp;">public class MainViewModel: ViewModelBase
+{
+    private string _name;
+
+    public string Name
+    {
+        get { return _name; }
+        set
+        {
+            Set(ref _name, value);
+            ShowMessageCommand.RaiseCanExecuteChanged();
+        }
+    }
+
+    private string _message;
+
+    public string Message
+    {
+        get { return _message;}
+        set { Set(ref _message, value); }
+    }
+
+    private RelayCommand _showMessageCommand;
+
+    public RelayCommand ShowMessageCommand
+    {
+        get
+        {
+            if (_showMessageCommand == null)
+            {
+                _showMessageCommand = new RelayCommand(() =&gt;
+                {
+                    Message = string.Format("Hello {0}", Name);
+                }, () =&gt; !string.IsNullOrEmpty(Name));
+            }
+
+            return _showMessageCommand;
+        }
+    }
+}
+</pre>
+<p>You can see, in action, all the standard features of a ViewModel created using MVVM Light as a toolkit:</p>
+<ul>
+<li>The ViewModel inherits from the <strong>ViewModelBase</strong> class, which gives you some helpers to properly support the <strong>INotifyPropertyChanged </strong>interface that is required to notify the controls in the View when the properties that are connected through binding are changed.
+<li>Every property isn’t defined with the standard get – set approach but, when the value of the property changes (in the <strong>set</strong> method), we call the <strong>Set()</strong> method offered by MVVM Light which, other than just assigning the value to the property, takes care of dispatching the notification to the controls in the View.
+<li>When you work with the MVVM pattern, you can’t react to user’s actions using event handlers, since they have a strict dependency with code behind: you can’t declare an event handler inside another class. The solution is to use <strong>commands</strong>, which are a way to express actions with a property, that can be connected to the View using binding. MVVM Light offers a class that makes this scenario easier to implement, called <strong>RelayCommand</strong>. When you create a <strong>RelayCommand</strong> object, you need to set: 1) the action to perform (in our case, we define the message to display to the user) 2) optionally, the condition that needs to be satisfied for the command to be activated (in our case, the user will be able to invoke the command only if the property called <strong>Name</strong> isn’t empty). If the condition isn’t met, the control be automatically disabled. In our sample, if the user didn’t insert his name in the box, the button will be disabled.
+<li>When the value of the <strong>Name</strong> property changes, we also call the <strong>RaiseCanExecuteChanged() </strong>method offered by the <strong>RelayCommand</strong> we’ve just defined: this way, every time the <strong>Name </strong>property changes, we tell to the command to evaluate its status, since it could be changed.</li>
+</ul>
+<h3></h3>
+<h3>The View</h3>
+<p>The following code, instead, show the Xamarin Forms XAML page that is connected to the ViewModel we’ve previously seen:</p>
+<pre class="brush: xml;">&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                       x:Class="MvvmLight_Sample.Views.MainView"&gt;
+  &lt;StackLayout Padding="12, 0, 12, 0"&gt;
+    &lt;Label Text="Insert your name:" /&gt;
+    &lt;Entry Text="{Binding Path=Name, Mode=TwoWay}" /&gt;
+    &lt;Button Command="{Binding Path=ShowMessageCommand}" Text="Show message" /&gt;
+    &lt;Label Text="{Binding Path=Message}" FontSize="30" /&gt;
+  &lt;/StackLayout&gt;
+&lt;/ContentPage&gt;
+</pre>
+<p>It’s a simple form, made by a text area where the user can insert his name and a button that, when it’s pressed, displays the message using a label. You can notice some difference with the standard XAML available in Windows Phone:</p>
+<ul>
+<li>
+<div align="left">The <strong>StackPanel</strong> control, which is able to display the nested controls one below the other, is called <strong>StackLayout</strong>.</div>
+</li>
+<li>
+<div align="left">To define the distance of the control from the screen’s border, we use the <strong>Padding</strong> property instead of the <strong>Margin</strong> one.</div>
+</li>
+<li>The <strong>TextBlock</strong> control, used to display a text to the user, is called <strong>Label</strong>.</li>
+<li>The <strong>TextBox</strong> control, used to receive the input from the user, is called <strong>Entry.</strong></li>
+<li>The content of the button (in this case, a text) is set using the <strong>Text</strong> property, while in the standard XAML is called <strong>Content</strong> and it accepts also a more complex XAML layout.</li>
+</ul>
+<p>Except for these differences in the XAML definition, we’re using standard binding to connect the controls with the properties defined in the ViewModel:</p>
+<ul>
+<li>The <strong>Entry</strong> control has a property called <strong>Text</strong>, which contains the name inserted by the user: we connect it to the <strong>Name</strong> property of the ViewModel, using the two-way binding.</li>
+<li>The <strong>Button</strong> control has a property called <strong>Command</strong>, which is connected to the <strong>ShowMessageCommand</strong> we’ve defined in the ViewModel. This way, the button will be enabled only if the <strong>Name</strong> property isn’t empty; if it’s enable, by pressing it we’ll display the hello message to the user.</li>
+<li>The hello message is stored into the <strong>Message</strong> property of the ViewModel, which is connected using binding to the last <strong>Label</strong> control in the page.</li>
+</ul>
+<h3>Wrapping up</h3>
+<p>In this post we’ve seen the basic concepts of using MVVM Light in a Xamarin Forms: except for some differences (like the <strong>ViewModelLocator</strong> usage), the approach should be very familiar to any Windows Phone developer that has already worked with the MVVM pattern and the MVVM Light toolkit. In the next posts we’ll take a look at how the dependency injection approach works in Xamarin Forms and how we can leverage it in a MVVM Light project. As usual, you can find the sample code used in this post on GitHub at <a title="https://github.com/qmatteoq/XamarinFormsSamples" href="https://github.com/qmatteoq/XamarinFormsSamples">https://github.com/qmatteoq/XamarinFormsSamples</a></p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-using-the-mvvm-pattern/feed/</wfw:commentRss>
+		<slash:comments>2</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/xamarin-forms-for-windows-phone-devs-using-the-mvvm-pattern/</feedburner:origLink></item>
+		<item>
+		<title>Xamarin Forms for Windows Phone devs – Navigation and application lifecycle</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/0P2Iy4Y-JVU/</link>
+		<comments>http://wp.qmatteoq.com/xamarin-forms-for-windows-store-app-devs-navigation-and-application-lifecycle/#comments</comments>
+		<pubDate>Fri, 16 Jan 2015 14:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[wpdev]]></category>
+		<category><![CDATA[Xamarin]]></category>
+		<category><![CDATA[Windows Phone]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6361</guid>
+		<description><![CDATA[One of the core concepts when you create a mobile application is navigation: it’s unlikely that an app is made by just one page, so you need to provide a way to the user to move from one page to the other. We’ve already seen, in the previous post, that the base navigation infrastructure for [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>One of the core concepts when you create a mobile application is navigation: it’s unlikely that an app is made by just one page, so you need to provide a way to the user to move from one page to the other. We’ve already seen, <a href="http://wp.qmatteoq.com/xamarin-forms-for-windows-store-app-devs-the-first-project/" target="_blank">in the previous post</a>, that the base navigation infrastructure for Xamarin Forms is provided by the <strong>NavigationPage</strong> class: by encapsulating a basic <strong>ContentPage</strong> page into a <strong>NavigationPage</strong>, we’ll be able to navigate from one page to another using the <strong>Navigation</strong> property, regardless of the platform where the application is running.</p>
+<h3></h3>
+<h3></h3>
+<h3>Navigate to another page</h3>
+<p>We’ve already seen that, to proper support navigation, we need to encapsulate our page into a <strong>NavigationPage</strong>. From a Windows Phone developer point of view, this operation is completely transparent to the user: a standard <strong>ContentPage</strong> and a <strong>ContentPage</strong> encapsulated into a <strong>NavigationPage</strong> will look exactly the same, since Windows Phone doesn’t provide a visual way to navigate through the different pages of the applications. The navigation is managed by the Back key, which is a physical button. In Android and iOS, instead, we can notice immediately if we’re using a <strong>NavigationPage</strong> or not: in the first case, in fact, the application will display an header with the name of the page and an arrow to go back to the previous page, if existing. The following image shows the same <strong>ContentPage</strong> on Android: the first one is directly displayed, the second one, instead, is embedded into a <strong>NavigationPage</strong> first. This is an important difference to understand if you’re coming to the Windows Phone world.</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/01/navigation1.png"><img title="navigation" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="navigation" src="http://wp.qmatteoq.com/wp-content/uploads/2015/01/navigation_thumb1.png" width="500" height="379"></a></p>
+<p>&nbsp;</p>
+<p>In the previous post we’ve seen the basic way to navigate from one page to the other: by using the <strong>PushAsync()</strong> method of the <strong>Navigation</strong> property, which requires as parameter the new page where we want to redirect the user.</p>
+<pre class="brush: csharp;">private async void OnNavigateClicked(object sender, EventArgs e)
+{
+    await Navigation.PushAsync(new DetailView());
+}
+</pre>
+<p>This code is the equivalent of calling the <strong>Navigate() </strong>method of the <strong>Frame</strong> class in a Windows Store app or the <strong>NavigationService</strong> class in a Silverlight app.</p>
+<p>This sample assumes that our project has a page called <strong>DetailView</strong>: by passing a new instance to the <strong>PushAsync()</strong> method, we’ll redirect the user to this page. Again, in Windows Phone you’ll just be redirected to a new page and, to go back, you’ll just have to use the Back button; on Android and iOS, instead, the header will change and it will display, other than the page title, a virtual back button to redirect the user to the previous page. The following image will help you to understand the difference:</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/01/detail1.png"><img title="detail" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="detail" src="http://wp.qmatteoq.com/wp-content/uploads/2015/01/detail_thumb1.png" width="500" height="378"></a></p>
+<p>In case you want to provide in your page an additional button to redirect the user to previous page, you can use the <strong>PopAsync()</strong> method of the <strong>Navigation</strong> class, like in the following sample:</p>
+<pre class="brush: csharp;">private async void OnNavigateBackClicked(object sender, EventArgs e)
+{
+    await Navigation.PopAsync();
+}
+
+</pre>
+<h3></h3>
+<p>The previous code is the equivalent of the <strong>GoBack()</strong> method exposed by the <strong>Frame </strong>class in a Windows Store app or the <strong>NavigationService </strong>class in a Silverlight app.</p>
+<h3>Displaying a modal view</h3>
+<p>Android and iOS has the concept of “modal view”, which is a full screen page that is displayed on top of navigation stack. The difference with a standard navigation is that the navigation bar will be hidden and the page will use the whole screen: the only way to go back to the previous page is by using the Back button (in Android) or by adding a dedicated button in the page, that will invoke a specific method offered by the <strong>Navigation</strong> class. To display a page in modal view, you’ll have to use the <strong>PushModalAsync()</strong> method, like in the following sample:</p>
+<pre class="brush: csharp;">private async void OnModalViewClicked(object sender, EventArgs e)
+{
+    await Navigation.PushModalAsync(new DetailView());
+}
+</pre>
+<p>The following image shows the difference between a navigation to the <strong>DetailView</strong> page using the <strong>PushAsync()</strong> method (on the left) and the <strong>PushModalAsync()</strong> method (on the right): as you can see, the right page doesn’t have the navigation bar at the top.</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/01/modal1.png"><img title="modal" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="modal" src="http://wp.qmatteoq.com/wp-content/uploads/2015/01/modal_thumb1.png" width="500" height="381"></a></p>
+<p>On Windows Phone, the <strong>PushModalAsync()</strong> method and the <strong>PushAsync()</strong> one has the same effect: since Windows Phone doesn’t have the concept of modal view, the <strong>PushModalAsync()</strong> method will simply redirect the user to the new page, allowing him to go back to the previous one simply by pressing the Back button. If you want to manually dismiss a modal view and redirect the user to the previous page, you can use the <strong>PopModalAsync()</strong> method:</p>
+<pre class="brush: csharp;">private async void OnBackClicked(object sender, EventArgs e)
+{
+    await Navigation.PopModalAsync();
+}
+</pre>
+<h3></h3>
+<h3>Combining different page’s types</h3>
+<p>In the previous post we’ve seen that Xamarin Forms offers different types of pages, like <strong>TabbedPage </strong>or <strong>CarouselPage</strong>, which were set directly as starting page of our application by assigning them to the <strong>MainPage </strong>property of the <strong>App </strong>class. However, we can also combine different page types, to create more complex navigation patterns. For example, we could have a<strong> NavigationPage</strong> that redirects the user to a<strong> TabbedPage</strong>, like in the following example:</p>
+<pre class="brush: csharp;">private async void OnTabbedPageClicked(object sender, EventArgs e)
+{
+    TabbedPage tabbedPage = new TabbedPage();
+    tabbedPage.Children.Add(new DetailView());
+    tabbedPage.Children.Add(new AnotherView());
+    await Navigation.PushModalAsync(tabbedPage);
+}
+</pre>
+<p>With this code, the user will be redirected from the current page to another page that will display two different sections: one connected to the <strong>DetailView</strong> page, the other one to the <strong>AnotherView</strong> page. Vice versa, we could have a <strong>TabbedPage</strong> that contains, as children, a <strong>NavigationPage</strong>, so that we can perform additional navigations from that page:</p>
+<pre class="brush: csharp;">public class App : Application
+{
+    public App()
+    {
+        TabbedPage tabbedPage = new TabbedPage();
+        NavigationPage navigationPage = new NavigationPage(new MainView());
+        tabbedPage.Children.Add(navigationPage);
+        tabbedPage.Children.Add(new AnotherView());
+
+        this.MainPage = tabbedPage;
+    }
+}
+</pre>
+<p>This way, the first section of the tab control (which is a <strong>MainView </strong>page) will allow the user to navigate to another page of the application (like a detail page). The following image shows a <strong>NavigationPage</strong> displayed inside a tab:</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/01/image2.png"><img title="image" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="image" src="http://wp.qmatteoq.com/wp-content/uploads/2015/01/image_thumb2.png" width="362" height="603"></a></p>
+<p>Again, you won’t notice instead any difference in the Windows Phone application: you will just see a <strong>Pivot</strong> control with two items, one for the <strong>MainView</strong> and one for the <strong>AnotherView</strong> pages.</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/01/image3.png"><img title="image" style="border-left-width: 0px; border-right-width: 0px; background-image: none; border-bottom-width: 0px; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-top-width: 0px" border="0" alt="image" src="http://wp.qmatteoq.com/wp-content/uploads/2015/01/image_thumb3.png" width="362" height="648"></a></p>
+<p>The only thing to keep in mind, in this scenario, is that the <strong>TabbedPage</strong> takes, as label for the tab, the title of the page: in this case, since we’re not directly setting as tab content the <strong>ContentPage</strong>, but we have wrapped it into a <strong>NavigationPage, </strong>we have also to set its <strong>Title</strong> property, otherwise the tab label will be empty. This is the proper code:</p>
+<pre class="brush: csharp;">public class App : Application
+{
+    public App()
+    {
+        TabbedPage tabbedPage = new TabbedPage();
+        NavigationPage navigationPage = new NavigationPage(new MainView()) { Title = "Main page"};
+        tabbedPage.Children.Add(navigationPage);
+        tabbedPage.Children.Add(new AnotherView());
+
+        this.MainPage = tabbedPage;
+    }
+}
+</pre>
+<h3>Page navigation</h3>
+<p>One common requirement in a mobile application is to detect is moving towards the current page or he’s navigating away to go to another page. This approach is very well known to Windows Phone developers: Windows Store apps, in fact, offer the <strong>OnNavigatedTo()</strong> and <strong>OnNavigatedFrom()</strong> events, which are often used to load data or to unsubscribe to event handlers. The <strong>OnNavigatedTo()</strong> event is especially useful to load the data to display in the current page: since it’s an event handler, we can use it also to invoke asynchronous method with the async / await pattern (which, instead, is not possible in the page’s constructor).</p>
+<p>These two events are mapped in Xamarin Forms with the <strong>OnAppearing()</strong> method (that is invoked when the page is being displayed) and the <strong>OnDisappearing</strong>() method (that is invoked when the user is moving away from the current page):</p>
+<pre class="brush: csharp;">public partial class MainView
+{
+    public MainView()
+    {
+        InitializeComponent();
+    }
+
+    protected override void OnAppearing()
+    {
+        Debug.WriteLine("Page is appearing");
+    }
+
+    protected override void OnDisappearing()
+    {
+        Debug.WriteLine("Page is disappearing");
+    }
+}
+</pre>
+<h3>The application lifecycle</h3>
+<p>If you’re a Windows Phone developer, you should be familiar with the concept of application’s lifecycle. To satisfy the typical requirement of a mobile environment (performance, battery consumption, etc.) all the mobile platform applies constraints to the operations that an application can perform in background. On all the platforms, typically, when an application isn’t in foreground anymore is suspended and it doesn’t have the chance to perform operation: this scenario is managed using other approaches, like background tasks in Windows Phone.</p>
+<p>Xamarin Forms has added three methods in the shared <strong>App</strong> class to properly manage the application’s lifecycle, in case you need to perform additional operations when the app is launched, suspended or resumed. The following sample shows how to declare and use these events:</p>
+<pre class="brush: csharp;">public class App : Application
+{
+
+   protected override void OnStart()
+   {
+       Debug.WriteLine("Application started");
+   }
+
+   protected override void OnSleep()
+   {
+       Debug.WriteLine("Application suspended");
+   }
+
+   protected override void OnResume()
+   {
+       Debug.WriteLine("Application resumed");
+   }
+}
+</pre>
+<p>If you are a Windows Phone developer, these events should be familiar to you:</p>
+<ul>
+<li><strong>OnStart()</strong> is called when the application is launched from scratch.
+<li><strong>OnSleep()</strong> is called when the application is suspended.
+<li><strong>OnResume()</strong> is called when the application is resumed. It’s important to highlight that this method is invoked only when a previous instance of the app was kept in memory and it’s restored: for example, on Windows Phone, in case of tombstoning (so the process was terminated by the operating system due to low resources) you’ll trigger the <strong>OnStart()</strong> method at startup and not the <strong>OnResume() </strong>one. </li>
+</ul>
+<h3>Wrapping</h3>
+<p>In this posts we’ve seen the basic concept of navigation and application’s lifecycle management and how they compare to the Windows Phone approach. In the next posts, we’ll start to see how to create a real application using the MVVM pattern. As usual, you can find the samples used in this post on GitHub: <a title="https://github.com/qmatteoq/XamarinFormsSamples" href="https://github.com/qmatteoq/XamarinFormsSamples">https://github.com/qmatteoq/XamarinFormsSamples</a></font></p>
+<p></font></font></p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/xamarin-forms-for-windows-store-app-devs-navigation-and-application-lifecycle/feed/</wfw:commentRss>
+		<slash:comments>4</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/xamarin-forms-for-windows-store-app-devs-navigation-and-application-lifecycle/</feedburner:origLink></item>
+		<item>
+		<title>Xamarin Forms for Windows Phone devs – The first project</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/DeJI8-Y2R8o/</link>
+		<comments>http://wp.qmatteoq.com/xamarin-forms-for-windows-store-app-devs-the-first-project/#comments</comments>
+		<pubDate>Tue, 13 Jan 2015 14:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[wpdev]]></category>
+		<category><![CDATA[Xamarin]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6354</guid>
+		<description><![CDATA[In the previous post, we’ve seen a brief introduction to Xamarin and Xamarin Forms. In this post we’ll start to play for real with a Xamarin Forms project. Creating the project After you’ve installed the Xamarin Tools, you’ll find a set of new templates in Visual Studio. The ones for Xamarin Forms are inside the [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p><a href="http://wp.qmatteoq.com/first-steps-with-xamarin-forms-a-brief-introduction/" target="_blank">In the previous post</a>, we’ve seen a brief introduction to Xamarin and Xamarin Forms. In this post we’ll start to play for real with a Xamarin Forms project.</p>
+<h3>Creating the project</h3>
+<p>After you’ve installed the Xamarin Tools, you’ll find a set of new templates in Visual Studio. The ones for Xamarin Forms are inside the category <strong>Mobile apps</strong>:</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/01/image.png"><img style="background-image: none; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-width: 0px;" title="image" src="http://wp.qmatteoq.com/wp-content/uploads/2015/01/image_thumb.png" alt="image" width="536" height="308" border="0" /></a></p>
+<p>There are two ways to create a Xamarin Form project, which should be familiar to every developer that has already worked with Universal Windows apps:</p>
+<ul>
+<li><strong>Xamarin Forms Portable</strong>: with this template, the shared project between all the different platforms will be a Portable Class Library (PCL).</li>
+<li><strong>Xamarin Forms Shared</strong>: with this template, we’re going to use the same approach used by the Universal Windows apps template. The shared project isn’t a real library, but it’s a collection of files (classes, assets, etc.) that are linked to the platform specific projects. This way, you’re going to host the common files in a single project, but they will be automatically copied and linked to the platform specific project during the build process.</li>
+</ul>
+<p>The two approaches are very similar: the main difference is that, with the the shared template, you’ll be able to use conditional compilation in case you want to execute platform specific code in a common class. However, Xamarin Forms, by using the dependency injection approach, offers a smarter and cleaner way to manage platform specific code, so I’ll suggest you to use the Portable Class Library approach. It’s the template we’re going to use in the next samples.</p>
+<p>When you create a new Xamarin Forms project, Visual Studio will create a new solution with four different projects: the shared Portable Class Library and three platform specific projects, one for iOS, one for Android and one for Windows Phone. Please note that, unfortunately, at the time of writing, Xamarin Forms still doesn’t support Windows Phone 8.1 and Universal Windows apps: the Windows Phone project created by Xamarin will target the 8.0 platform.</p>
+<p><a href="http://wp.qmatteoq.com/wp-content/uploads/2015/01/image1.png"><img style="background-image: none; padding-top: 0px; padding-left: 0px; display: inline; padding-right: 0px; border-width: 0px;" title="image" src="http://wp.qmatteoq.com/wp-content/uploads/2015/01/image_thumb1.png" alt="image" width="424" height="150" border="0" /></a></p>
+<p>In a typical Xamarin Forms project, most of the assets, code and views will be included in the shared project: the platform specific projects will just take care of initialing the Xamarin Forms infrastructure. If you take a look at the main page of each project, in fact, you’ll find that it will just take care of initializing Xamarin Forms and loading the <strong>App</strong> class of the shared project, which is is the starting point of the application. Let’s take a look, for example, at the definition of the <strong>MainPage.xaml.cs</strong> file in the Windows Phone project, which should be the most familiar technology for you if you’re reading this blog:</p>
+<pre class="brush: csharp;">public partial class MainPage : FormsApplicationPage
+{
+    public MainPage()
+    {
+        InitializeComponent();
+
+        Forms.Init();
+        LoadApplication(new Sample.App());
+    }
+}
+</pre>
+<p>The initialization is performed by the <strong>Forms.Init()</strong> method, while the application is loaded by the <strong>LoadApplication()</strong> method.</p>
+<p>However, as we’re going to see in the next posts, the various projects can also contain platform specific classes that use APIs or features that are available only on one platform or that are implemented in a different way.</p>
+<h3>Checking for Xamarin Forms upgrades</h3>
+<p>Xamarin Forms is simply a collection of libraries that are available on NuGet and that are referenced automatically in every new Xamarin Forms project. Consequently, the first step is to check if there are upgrades to the library, since Xamarin can update it independently from the core Xamarin runtime. At the moment of writing, for example, the latest Xamarin Forms version is 1.3, while the stable Xamarin tools still create projects that are based on the old 1.2 version. Consequently, unless you’re using the beta channel (which already offers the updated templates), you will have to manually upgrade the projects.</p>
+<p>The first step is to right click on the solution, choose <strong>Manage NuGet Packages</strong> <strong>for solution</strong> and check for updates on the Xamarin Forms project. If you’re still using the Xamarin stable channel and the 1.2 templates , you will need to make some changes to the code, in order to support the new features. Xamarin has published a <a href="https://developer.xamarin.com/guides/cross-platform/macios/updating-xamarin-forms-apps/" target="_blank">detailed tutorial</a> on the steps to perform.</p>
+<p><strong>Update: </strong>Xamarin yesterday released the 3.9 version in the Stable channel, which already provides the correct Visual Studio templates to create Xamarin Forms apps based on version 1.3.</p>
+<h3>Creating the first view</h3>
+<p>The main class of a Xamarin Forms app is called <strong>App</strong> and takes care of initializing the first page of the application, which is provided by the <strong>MainPage</strong> property. If you open the standard <strong>App.cs</strong> file created by the Xamarin Forms templates, you’ll find the following code:</p>
+<pre class="brush: csharp;">public class App : Application
+{
+    public App()
+    {
+        this.MainPage = new ContentPage
+        {
+            Content = new Label
+            {
+                Text = &quot;Hello, Forms !&quot;,
+                VerticalOptions = LayoutOptions.CenterAndExpand,
+                HorizontalOptions = LayoutOptions.CenterAndExpand,
+            },
+        };
+    }
+}
+</pre>
+<p>This sample shows you that there are two ways to define a page in Xamarin Forms: by creating the layout in code behind and assigning it to the <strong>Content</strong> property of the page or by using XAML. Many samples in the web use the first approach, but I prefer the XAML one, since it’s more similar to the traditional Windows Store and Windows Phone development. The first step, consequently, is to create a new XAML page, by right clicking on your project and by choosing <strong>Add new item</strong> an selecting <strong>Forms XAML Page</strong> as template. The page will look like a page in a Windows Phone app, with a .xaml file (with the layout) and a xaml.cs file (with the code behind class).</p>
+<p>Here is the XAML page:</p>
+<pre class="brush: xml;">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;ContentPage xmlns=&quot;http://xamarin.com/schemas/2014/forms&quot;
+                       xmlns:x=&quot;http://schemas.microsoft.com/winfx/2009/xaml&quot;
+                       x:Class=&quot;App2.SamplePage&quot;&gt;
+    &lt;Label Text=&quot;{Binding MainText}&quot; VerticalOptions=&quot;Center&quot; HorizontalOptions=&quot;Center&quot; /&gt;
+&lt;/ContentPage&gt;
+</pre>
+<p>As you can see, it looks like a regular Windows Phone page, so the approach should be very familiar for you. You will just have to study a bit <a href="http://developer.xamarin.com/guides/cross-platform/xamarin-forms/controls/" target="_blank">the official documentation</a> to learn the differences in the controls and properties naming. For example, the <strong>TextBlock</strong> control is called <strong>Label</strong>, while the <strong>TextBox</strong> control is called <strong>Entry; </strong>the label of a button is set using the <strong>Text</strong> property instead of the <strong>Content</strong> one; binding is supported, but the data context is set using the <strong>BindingContext</strong> property instead of the <strong>DataContext</strong> one; etc.</p>
+<p>Here is, instead, the code behind file:</p>
+<pre class="brush: csharp;">public partial class SamplePage
+{
+    public SamplePage()
+    {
+        InitializeComponent();
+    }
+}
+</pre>
+<p>Once you’ve created the first page, you’ll have to change the <strong>App </strong>code to use it, in replacement of the sample page that is created in code. It’s enough to assign to the <strong>MainPage</strong> property a new instance of the page we’ve just created, like in the following sample:</p>
+<pre class="brush: csharp;">public class App : Application
+{
+   public App()
+   {
+       this.MainPage = new SamplePage();
+   }
+}
+
+</pre>
+<p>However, the previous code is quite useless: the page we’ve created it’s a <strong>ContentPage</strong> (as you can see from the name of the root tag in the XAML), which is just a placeholder for the content and doesn’t provide any option that is required when you develop a complex application, like a navigation system to move to other pages or the ability to manage different sections. This is one of the main differences between Windows Phone development and Xamarin Forms: the different concept of pages.</p>
+<h3>Managing the pages</h3>
+<p>If you’re a Windows Phone developer, there’s an important difference to understand about the views and the navigation framework. When you create a Windows Phone application, you simply work with pages, that are identified by the <strong>Page </strong>class in the Windows Runtime or the <strong>PhoneApplicationPage</strong> class in Silverlight. There are no differences between a page with a Pivot control, a Hub control or a ListView control: they are all pages, what changes are the controls that are placed inside them.</p>
+<p>In Xamarin Forms, instead, there are different kind of pages, which all inherit from the base <strong>Page</strong> class. Most of them are mapped with different Windows Phone layouts:</p>
+<ul>
+<li><strong>ContentPage</strong> is the standard simple page.</li>
+<li><strong>NavigationPage</strong> is a page that offers a navigation framework to move from one page to another.</li>
+<li><strong>TabbedPage</strong> is a page that offers quick access to multiple sections. It’s represented as a page with a Pivot control in Windows Phone.</li>
+<li><strong>CarouselPage</strong> is a page that allows the user to scroll between different pages. It’s represented as a page with a Panorama / Hub control in Windows Phone.</li>
+</ul>
+<p>This approach is required because there are many differences between the navigation system of each platform: for example, since Windows Phone has a hardware Back button, the UI doesn’t need to include a software button. However, Android and iOS have a different approach and, in case it’s a page that supports navigation towards another page, they display a navigation bar at the top, that it’s used to move back and forward to the different pages.</p>
+<p>Another example is the usage of tabs: in Windows Phone, when an application has different sections or different contents to display, we use a Pivot or a Hub control, which is a way to divide a page into different sub sections, each of them with its content. In Android and iOS, instead, sections are managed with tabs: there’s a main page, with different tabs, and a page for each section, that are displayed inside the tabs.</p>
+<p>Consequently, as we’re going to see later, most of the time you’ll work with the <strong>ContentPage</strong> type, which is the standard page that is used to display information to the user. The other page types, instead, are invisible to the user and they will be used as a container for content pages.</p>
+<h4>The ContentPage</h4>
+<p><strong>ContentPage</strong> is the basic page that simply displays some content to the user: when you add a new XAML page to your Xamarin Forms project, by default its type is <strong>ContentPage</strong>, as you can see by the name of the root node in the XAML definition:</p>
+<pre class="brush: xml;">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;ContentPage xmlns=&quot;http://xamarin.com/schemas/2014/forms&quot;
+                       xmlns:x=&quot;http://schemas.microsoft.com/winfx/2009/xaml&quot;
+                       x:Class=&quot;Views.Views.MainView&quot;&gt;
+    &lt;Label Text=&quot;{Binding MainText}&quot; VerticalOptions=&quot;Center&quot; HorizontalOptions=&quot;Center&quot; /&gt;
+&lt;/ContentPage&gt;
+</pre>
+<p>When you need to define a page that displays some information to the user, you’ll always work with a <strong>ContentPage. </strong>Consequently, when you create a new XAML Forms Page using the Visual Studio template, you’ll always create by default a <strong>ContentPage</strong> one, since it’s the only “visible” kind of page, that can display some content to the user. All the other page’s types are “invisible” and simply acts as a container for other <strong>ContentPage</strong> pages.</p>
+<h4></h4>
+<h4>The NavigationPage</h4>
+<p>A <strong>ContentPage </strong>alone, however, in most of the cases it’s useless, unless your application is composed by just one page. From a <span style="font-weight: bold;">ContentPage</span>, in fact, the user doesn’t have a way to move to another page or to another section. This is why Xamarin Forms offers a <strong>NavigationPage: </strong>it’s simply a container for a <strong>ContentPage, </strong>which adds a <strong>Navigation </strong>property that offers some method to move from one page to another.</p>
+<p>A <strong>NavigationPage </strong>is invisible to the user: this is why, when you create a new instance of the class, you need to pass as parameter the <strong>ContentPage</strong> you want to “encapsulate” into the navigation framework. The following sample shows how to define the <strong>App</strong> class to use this approach:</p>
+<pre class="brush: csharp;">public class App : Application
+{
+    public App()
+    {
+        NavigationPage navigationPage = new NavigationPage(new MainView());
+        this.MainPage = navigationPage;
+    }
+}
+</pre>
+<p>By encapsulating the <strong>MainView</strong> (which is a <strong>ContentPage</strong>) into a <strong>NavigationPage</strong>, we will be able to navigate to another page by using the <strong>PushAsync() </strong>method of the <strong>Navigation</strong> property (we’ll talk in details about the navigation system in the next post):</p>
+<pre class="brush: csharp;">private async void Button_OnClicked(object sender, EventArgs e)
+{
+    await Navigation.PushAsync(new SecondView());
+}
+</pre>
+<h4>The TabbedPage and CarouselPage</h4>
+<p>As already mentioned, the <strong>TabbedPage</strong> and <strong>CarouselPage</strong> classes are used when you want to display different sections of the application, each of them represented by a different <strong>ContentPage</strong>. Tabbed pages are rendered with tab controls on Android and iOS, while on Windows Phone with a Pivot control, as you can see in the following image:</p>
+<p><img src="http://iosapi.xamarin.com/monodoc.ashx?link=source-id:1:TabbedPage.TripleScreenShot.png" alt="" width="498" height="249" /></p>
+<p>The <strong>CarouselPage</strong>, instead, display the pages one near the other and the user can browse them with a swipe gesture. This approach is more familiar to Windows Phone developers, since it’s the same experience offered by the Panorama and Hub controls:</p>
+<p><img src="http://iosapi.xamarin.com/monodoc.ashx?link=source-id:1:CarouselPage.TripleScreenShot.png" alt="" width="492" height="246" /></p>
+<p>&nbsp;</p>
+<p>Like for the <strong>NavigationPage</strong>, these two page types are just a container for other <strong>ContentPage</strong> pages, which define the real content that is displayed in each page. The following sample shows how to define a <strong>TabbedPage</strong> with two sections:</p>
+<pre class="brush: csharp;">public class App : Application
+{
+    public App()
+    {
+        TabbedPage tabbedPage = new TabbedPage {Title = &quot;Tabbed page&quot;};
+        tabbedPage.Children.Add(new FirstView());
+        tabbedPage.Children.Add(new SecondView());
+
+        this.MainPage = tabbedPage;
+
+    }
+}
+</pre>
+<p><strong>FirstView </strong>and <strong>SecondView </strong>are two <strong>ContentPage</strong> pages, which have been added in the shared project. The title of the tab is taken from the title of the page, which is set by the <strong>Title</strong> property of the <strong>ContentPage</strong>, which can be set directly in XAML like in the following sample:</p>
+<pre class="brush: xml;">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;ContentPage xmlns=&quot;http://xamarin.com/schemas/2014/forms&quot;
+             xmlns:x=&quot;http://schemas.microsoft.com/winfx/2009/xaml&quot;
+             Title=&quot;First view&quot;
+             x:Class=&quot;Views.Views.FirstView&quot;&gt;
+    &lt;Label Text=&quot;First view&quot; VerticalOptions=&quot;Center&quot; HorizontalOptions=&quot;Center&quot; /&gt;
+&lt;/ContentPage&gt;
+</pre>
+<p>Eventually, you can also set an icon to use as section’s identifier, by using the <strong>Icon </strong>property: some platforms (like iOS), in fact, can display also an image other than just a text in the tab to identify the section.</p>
+<h3>Wrapping up</h3>
+<p>In this post we’ve seen how to setup our first project and which are the similarities and the differences between developing a Windows Store app and a Xamarin Forms app. Once you’ve defined the startup page of your application, you can start working with it in the same way you do in a Windows Store app: you can add controls in the XAML page, subscribe to event handlers and manage the user’s interaction in the code behind. In the next post we’ll see in details how to manage the application’s lifecycle and the navigation, then we’ll move on to understand how to implement the MVVM pattern in a Xamarin Foms app. Meanwhile, you can play with the sample project published at <a title="https://github.com/qmatteoq/XamarinFormsSamples" href="https://github.com/qmatteoq/XamarinFormsSamples">https://github.com/qmatteoq/XamarinFormsSamples</a></p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/xamarin-forms-for-windows-store-app-devs-the-first-project/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/xamarin-forms-for-windows-store-app-devs-the-first-project/</feedburner:origLink></item>
+		<item>
+		<title>Xamarin Forms for Windows Phone devs – A brief introduction</title>
+		<link>http://feedproxy.google.com/~r/qmatteoq_eng/~3/s4A5U8ymI04/</link>
+		<comments>http://wp.qmatteoq.com/first-steps-with-xamarin-forms-a-brief-introduction/#comments</comments>
+		<pubDate>Thu, 08 Jan 2015 14:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[qmatteoq]]></dc:creator>
+				<category><![CDATA[wpdev]]></category>
+		<category><![CDATA[Xamarin]]></category>
+		<category><![CDATA[Windows Phone]]></category>
+
+		<guid isPermaLink="false">http://wp.qmatteoq.com/?p=6345</guid>
+		<description><![CDATA[Mobile cross platform development is one of the hottest topics nowadays. The market offers to consumers three major mobile platforms (iOS, Android and Windows Phone), each of them based on its own technologies, patterns and tools. iOS is based on Objective-C or Swift as programming language and uses XCode as development tool; Android is based [&#8230;]]]></description>
+				<content:encoded><![CDATA[<p>Mobile cross platform development is one of the hottest topics nowadays. The market offers to consumers three major mobile platforms (iOS, Android and Windows Phone), each of them based on its own technologies, patterns and tools. iOS is based on Objective-C or Swift as programming language and uses XCode as development tool; Android is based on Java as programming language and uses Eclipse as development tool (even if there are many other alternatives); in the end, Windows Phone is based on C#, VB.NET or HTML / JS and uses Visual Studio as development tool.</p>
+<p>Consequently, if you’re a mobile company and you want to create applications that target all of them, you’ll need three dedicated teams, each of them with their own skills and knowledge. Unfortunately, not all the companies can afford such an investment, especially if mobile development isn’t the core business: for example, you’re a web agency that would like to offers to their customers, other than a website, also a companion application; or maybe you’re an enterprise company and you want to provide mobile tools to your employees, regardless of the mobile device they have.</p>
+<p>Consequently, many software companies have tried to find new approaches to allow developers to create applications that are able to share as much as code as possible between all the platforms, so that the development teams don’t need to create three completely different applications from scratch. Currently, there are two approaches to achieve this goal:</p>
+<ul>
+<li><strong>Web based apps: </strong>this approach is based on HTML and Javascript technologies, which are executed on the phone using a WebView control that is embedded into the app. Thanks to tools like <a href="http://cordova.apache.org/" target="_blank">Apache Cordova</a> (previously known as PhoneGap), you’re able to access to some of the native features of the platform (like storage, sensors, etc.) by using Javascript APIs. This approach is based on the principle “write once and run everywhere”: you’re going to create a single application, that will run on every platform without any change.
+<li><strong>Xamarin:</strong> this approach allows developers to use Microsoft technologies and tools (C#, Visual Studio, the .NET Framework) to create native application for all the platforms. We’re going to analyze better in this post how it works and which are the differences compared to web based apps.</li>
+</ul>
+<h3>What is Xamarin?</h3>
+<p>Xamarin is a company founded by Miguel De Icaza, which gathered together all the teams that created Mono, MonoTouch and Mono for Android, which are the open source implementations of the .NET framework that can run on platforms different than Windows. With Xamarin tools, you’ll be able to create applications for iOS and Android by using C# as a programming language and Visual Studio (or Xamarin Studio) as a development environment. All the iOS and Android APIs have been translated into C# classes and objects which, under the hood, are compiled into native code. Which are the main advantages of using Xamarin instead of a web approach based on tools like Apache Cordova?</p>
+<ul>
+<li><strong>Performance</strong>: the biggest downside of web based apps is that are executed in a WebView, so they don’t offer the same performance of a native app. In addition, the application’s performances change a lot based on the operating system’s version, since typically every new release improves the browser’s performance and compatibility with the latest web technologies.
+<li><strong>Design</strong>: the “write once and run everywhere” approach is great because it minimizes the amount of work for developers, but it reduces the quality of the design and the user experience. Every platform has its own visual style and guidelines, so it’s impossible to create an application with a common visual layout that looks good on each platform.
+<li><strong>Features: </strong>since web apps are based on the “write once and run everywhere” approach, tools like Cordova are able to offer to developers only a minimum set of APIs that are in common between every platform. You won’t be able to use features that, instead, are specific for each platform, like live tiles on Windows Phone or background activities in Android.</li>
+</ul>
+<h3></h3>
+<h3>What is not Xamarin?</h3>
+<p>The most important concept to understand is that Xamarin isn’t a “write once and run everywhere” platform. When you develop web apps, you can virtually know nothing about the technical details of the different mobile platforms: creating a web app is just like creating a website, with the only exception that you’ll be able to interact with the hardware thanks to libraries like Cordova. Xamarin, instead, requires a good knowledge of each platform and how the main features are implemented, like the navigation framework, the application’s lifecycle, the design language, etc. A good example is how the design of the application’s pages is defined: you’ll have to design three different interfaces using the specific platform tools, like XAML for Windows Phone or the XCode designer for iOS.</p>
+<p>Consequently, Xamarin isn’t a technology to create mobile apps for each platform without having to learn the basics like with web apps, but it will help you to:</p>
+<ul>
+<li><strong>Reuse your business logic</strong>: by using technologies like Portable Class Libraries (PCL), you’ll be able to write the logic just once (like services to interact with a database or a REST service) and to reuse it in every platform.
+<li><strong>Reuse your existing skills</strong>: you’ll still have to learn the basic concepts of developing apps for iOS and Android, but you won’t have to learn a new programming language in the process. You’ll be able to reuse your existing .NET and C# knowledge.</li>
+</ul>
+<p>Another important consideration to do is that Xamarin isn’t the best cross platform solution for everyone: if you’re already a Microsoft developer, it’s for sure the best technology out there to reuse your skills to create applications for all the main mobile platforms. However, if you’re an iOS or Android developer is definitely a good investment, but it will require you more time to assimilate it, since you’ll have to learn a new programming language in the process: C#.</p>
+<p>In the end, Xamarin isn’t very cheap, so it’s more suitable for professionals and big development teams. Currently, there are three available plans:</p>
+<ul>
+<li><strong>Starter</strong>, which is free but it has many limitations. It doesn’t offer integration with Visual Studio, it doesn’t support Xamarin Forms, it has a limitation in the size of the app that you can create, etc.
+<li><strong>Indie</strong>, which costs 25 $ per month and it’s dedicated to indie developers. The biggest downside of this plan is that it doesn’t support Visual Studio integration.
+<li><strong>Business</strong>, which is the most popular plan. It costs 83 $ per month and it includes all the available features, from Xamarin Forms to Visual Studio integration.</li>
+</ul>
+<p>Xamarin offers also an Enterprise plan that includes the same tools of the Business plan, in addition to advanced services like One Business Day support, a dedicated Technical Account Manager, etc.</p>
+<p>However, during the recent <a href="http://channel9.msdn.com/Events/Visual-Studio/Connect-event-2014" target="_blank">Connect()</a> event by Microsoft, Xamarin has announced that in 2015 is going to release a new Starter edition, with less limitations and integrated with <a href="http://www.visualstudio.com/en-us/products/visual-studio-community-vs" target="_blank">Visual Studio 2013 Community</a>, the free Professional version recently released by Microsoft for independent developers and small companies.</p>
+<h3>What is Xamarin Forms?</h3>
+<p>We’ve learned that using Xamarin requires a good knowledge of each platform, especially when it comes to design the user interface and to manage the navigation. This way, we are able to create applications that follows the specific platform’s guidelines. However, this approach is very expensive for a single developer, since it requires to learn and master every design technology: Windows Phone is based on XAML, Android on its own XML dialect while iOS uses a visual tool called Interface Builder.</p>
+<p>Xamarin Forms is a recent technology created by Xamarin in order to partially solve this problem: it offers a new way to create the application’s interface by using the XAML language, which should be already familiar to Windows Phone and Windows developers. Xamarin Forms offers a set of controls (which are represented by a XML tag) that, at runtime, are converted into the most appropriate native control: this way, we’ll be able to define the user interface just once, but the application will continue to have the native look on each platform. For example, if you need to grab the input from the user, Xamarin Forms offers a control called <strong>Entry</strong>, which is rendered as a <strong>TextBox</strong> in Windows Phone, as an <strong>EditText</strong> in Android and as an <strong>UITextField</strong> in iOS.</p>
+<p><img src="http://iosapi.xamarin.com/monodoc.ashx?link=source-id:1:Entry.TripleScreenShot.png" width="652" height="326"></p>
+<p>With Xamarin Forms, the development approach is very similar to the Windows and Windows Phone one: every page is composed by a XAML file (which contains the layout definition) and a code behind file (which contains the code that interacts with the user interface). You have also access to all the most important XAML features, like binding, converters, styles, behaviors, etc. If you already have a good experience in developing Windows Store and Windows Phone apps like me, Xamarin Forms is for sure the easiest way to reuse your knowledge to create mobile applications for all the platforms.</p>
+<p>In the next posts we’ll see, in details, how to create an application using Xamarin Forms, with a strong focus on the MVVM pattern: since this pattern makes easier to separate the user interface from the logic, it will greatly help us to reuse the same code on all the platforms.</p>
+<h3>What do you need to start with Xamarin Forms?</h3>
+<p>The basic requirements to start with Xamarin Forms are the Xamarin tools, which can be downloaded from <a href="http://www.xamarin.com">http://www.xamarin.com</a>. Then, you have two ways to use it: with Xamarin Studio, which is the development environment created by Xamarin, or Visual Studio 2013. However, the second one is the only solution that can be used to create applications for all the platforms: Xamarin Studio, in fact, supports only Android and iOS, while with Visual Studio you’ll be able to create a project that targets also Windows Phone. However, Xamarin Studio, unlike Visual Studio 2013, is available also for OS X.</p>
+<p>If you want to build applications for iOS you’ll need also a Mac, since Windows doesn’t have the required runtime: however, Xamarin includes a tool called <strong>Xamarin Build Host</strong>, which can be installed and launched on a Mac that is in the same network of our Windows computer. Visual Studio will be able to connect to it and to use it to build the iOS application and, eventually, to deploy it on the emulator or on a phone that is connected to the Mac.</p>
+<p>The Android runtime, instead, can run just fine both on Windows and OS X, so there aren’t special requirements. The only problem you’ll have to deal with is the Android emulator: the native one created by Google is really bad, since it offers really poor performances. Consequently, many companies have created alternative emulators, with the goal to offer better performances and additional tools: Xamarin itself offers an emulator called Android Player, which can be downloaded from <a title="https://xamarin.com/android-player" href="https://xamarin.com/android-player">https://xamarin.com/android-player</a>. Another good alternative is <a href="https://www.genymotion.com/" target="_blank">Genymotion</a>, which is free for personal use. The downside of these emulators is that they are based on VirtualBox, the virtualization technology by Oracle, which doesn’t play well with Hyper-V, which is the Microsoft virtualization technology used for the Windows Phone emulators. Consequently, you have two ways if you want to test your Xamarin Forms app both on Windows Phone and Android:</p>
+<ul>
+<li>Use a real Android device and keep using the Windows Phone emulator.
+<li>If you’re reading this post, you probably are a Windows or Windows Phone developer. Consequently, it’s very likely that you already have a Windows Phone device for testing, but not an Android one. Scott Hanselman explains <a href="http://www.hanselman.com/blog/SwitchEasilyBetweenVirtualBoxAndHyperVWithABCDEditBootEntryInWindows81.aspx" target="_blank">in this post</a> how to change your computer’s bootloader so that you can launch Windows with Hyper-V disabled, without having to completely uninstall it: this way, you’ll be able to launch the Android emulator and keep using a Windows Phone device for testing.</li>
+</ul>
+<p>However, there’s another alternative: <a href="http://www.visualstudio.com/en-us/downloads/visual-studio-2015-downloads-vs.aspx" target="_blank">Visual Studio 2015 Preview</a>, in fact, includes a very fast Android emulator. Since it’s based on Hyper-V, it can run side by side with the Windows Phone emulator. The only downside of this approach is that you’ll need to use preview software: other than installing the Preview version of Visual Studio 2015, in fact, you’ll need also to switch to the Xamarin beta channel, since the current stable version supports only Visual Studio 2013. To do that, you’ll need to open Xamarin Studio or Visual Studio (after you’ve installed the Xamarin Tools) and, in the Settings, check for updates: by default, Xamarin is set to use the Stable channel, but you can switch to get updates from the beta or alpha ones.</p>
+<h3>Wrapping up</h3>
+<p>In this post we’ve seen what are Xamarin and Xamarin Forms and why it can be a great solution for Microsoft developers to create applications for all the mobile platforms. This post was just a theoretical introduction to this platform: in the next ones we’ll start to see some code and how to create our first cross platform app reusing the skills we’ve acquired by developing apps for Windows and Windows Phone.</p>
+]]></content:encoded>
+			<wfw:commentRss>http://wp.qmatteoq.com/first-steps-with-xamarin-forms-a-brief-introduction/feed/</wfw:commentRss>
+		<slash:comments>0</slash:comments>
+		<feedburner:origLink>http://wp.qmatteoq.com/first-steps-with-xamarin-forms-a-brief-introduction/</feedburner:origLink></item>
+	</channel>
+</rss>

@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Windows.ApplicationModel;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -31,8 +33,11 @@ namespace WindowsSample
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
+            StorageFile file = await Package.Current.InstalledLocation.GetFileAsync("feed.xml");
+            string feed = await FileIO.ReadTextAsync(file);
+
             RssService service = new RssService();
-            List<FeedItem> items = await service.GetNews("http://feeds.feedburner.com/qmatteoq_eng");
+            List<FeedItem> items = await service.GetNews(feed);
             News.ItemsSource = items;
         }
     }

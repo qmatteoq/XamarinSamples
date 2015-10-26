@@ -10,11 +10,9 @@ namespace NewsLibrary.Services
 {
     public class RssService
     {
-        public async Task<List<FeedItem>> GetNews(string url)
+        public async Task<List<FeedItem>> GetNews(string data)
         {
-            HttpClient client = new HttpClient();
-            string result = await client.GetStringAsync(url);
-            var xdoc = XDocument.Parse(result);
+            var xdoc = XDocument.Parse(data);
             return (from item in xdoc.Descendants("item")
                     select new FeedItem
                     {

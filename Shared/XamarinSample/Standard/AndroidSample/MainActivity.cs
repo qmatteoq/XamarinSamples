@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Android.App;
 using Android.Content;
@@ -22,8 +23,14 @@ namespace AndroidSample
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
+            string content;
+            using (StreamReader sr = new StreamReader(Assets.Open("feed.xml")))
+            {
+                content = sr.ReadToEnd();
+            }
+
             RssService service = new RssService();
-            List<FeedItem> list = await service.GetNews("http://feeds.feedburner.com/qmatteoq_eng");
+            List<FeedItem> list = await service.GetNews(content);
             
             List<string> items = list.Select(x => x.Title).ToList();
 

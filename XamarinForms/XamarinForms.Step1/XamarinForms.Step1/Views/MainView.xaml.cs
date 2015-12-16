@@ -11,16 +11,11 @@ namespace XamarinForms.Step1.Views
 {
     public partial class MainView : ContentPage
     {
-
         private bool isFirstLoad;
 
         public MainView()
         {
             InitializeComponent();
-            this.Content = new StackLayout
-            {
-                Children = {new Label {Text = "Hello Forms!"}, new Button {Text = "Click me!"}}
-            };
         }
 
         protected override async void OnAppearing()

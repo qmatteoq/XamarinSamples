@@ -17,7 +17,7 @@
       </ListView.ItemTemplate>
     </ListView>
 
-    <ActivityIndicator x:Name="LoadingIndicator" Color="Accent" WidthRequest="100" HeightRequest="100" />
+    <ActivityIndicator x:Name="LoadingIndicator" Color="Accent" WidthRequest="50" HeightRequest="50" />
   </Grid>
 
 </ContentPage>

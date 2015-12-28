@@ -12,7 +12,7 @@
             <ViewCell.View>
               <StackLayout>
                 <Image Source="{Binding Path=Thumbnail.FullSizeUri}" VerticalOptions="End" Aspect="AspectFill"
-                    HeightRequest="300"  />
+                    HeightRequest="300" WidthRequest="300"  />
               </StackLayout>
             </ViewCell.View>
           </ViewCell>

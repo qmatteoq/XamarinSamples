@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Android.OS;
 using Android.Speech.Tts;
 using FormsSample.Droid.Services;
 using FormsSample.Services;
@@ -14,7 +16,7 @@ namespace FormsSample.Droid.Services
 
         public TextToSpeechAndroid() { }
 
-        public void Speak(string text)
+        public async Task Speak(string text)
         {
             var ctx = Forms.Context; // useful for many Android SDK features
             toSpeak = text;
@@ -24,9 +26,10 @@ namespace FormsSample.Droid.Services
             }
             else
             {
-                var p = new Dictionary<string, string>();
-                speaker.Speak(toSpeak, QueueMode.Flush, p);
+                speaker.Speak(toSpeak, QueueMode.Flush, Bundle.Empty, string.Empty);
             }
+
+            await Task.Yield();
         }
 
         #region IOnInitListener implementation

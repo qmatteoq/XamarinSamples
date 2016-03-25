@@ -26,8 +26,7 @@ namespace FormsSample.Droid
 		
 		public static void UpdateIdValues()
 		{
-			global::Xamarin.Forms.Platform.Resource.String.ApplicationName = global::FormsSample.Droid.Resource.String.ApplicationName;
-			global::Xamarin.Forms.Platform.Resource.String.Hello = global::FormsSample.Droid.Resource.String.Hello;
+			global::Xamarin.Forms.Platform.Android.Resource.Attribute.actionBarSize = global::FormsSample.Droid.Resource.Attribute.actionBarSize;
 		}
 		
 		public partial class Attribute
@@ -55,25 +54,6 @@ namespace FormsSample.Droid
 			}
 			
 			private Drawable()
-			{
-			}
-		}
-		
-		public partial class String
-		{
-			
-			// aapt resource value: 0x7f030001
-			public const int ApplicationName = 2130903041;
-			
-			// aapt resource value: 0x7f030000
-			public const int Hello = 2130903040;
-			
-			static String()
-			{
-				global::Android.Runtime.ResourceIdManager.UpdateIdValues();
-			}
-			
-			private String()
 			{
 			}
 		}

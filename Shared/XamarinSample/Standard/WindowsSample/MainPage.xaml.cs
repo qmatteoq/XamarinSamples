@@ -33,11 +33,9 @@ namespace WindowsSample
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
-            StorageFile file = await Package.Current.InstalledLocation.GetFileAsync("feed.xml");
-            string feed = await FileIO.ReadTextAsync(file);
-
             RssService service = new RssService();
-            List<FeedItem> items = await service.GetNews(feed);
+            string url = "http://blog.qmatteoq.com/feed";
+            List<FeedItem> items = await service.GetNews(url);
             News.ItemsSource = items;
         }
     }

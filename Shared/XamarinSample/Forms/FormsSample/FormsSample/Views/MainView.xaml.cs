@@ -17,16 +17,9 @@ namespace FormsSample.Views
 
         protected override async void OnAppearing()
         {
-            var assembly = typeof(App).GetTypeInfo().Assembly;
-            Stream stream = assembly.GetManifestResourceStream("FormsSample.feed.xml");
-            string text = "";
-            using (var reader = new StreamReader(stream))
-            {
-                text = reader.ReadToEnd();
-            }
-
             RssService service = new RssService();
-            IEnumerable<FeedItem> items = await service.GetNews(text);
+            string url = "http://blog.qmatteoq.com/feed";
+            IEnumerable<FeedItem> items = await service.GetNews(url);
             News.ItemsSource = items;
         }
 

@@ -32,7 +32,7 @@ namespace iOSSample
 
             // Perform any additional setup after loading the view, typically from a nib.
             RssService service = new RssService();
-            List<FeedItem> list = await service.GetNews("http://feeds.feedburner.com/qmatteoq_eng");
+            List<FeedItem> list = await service.GetNews("http://blog.qmatteoq.com/feed");
 
             items = list.Select(x => x.Title).ToArray();
             TableView.Source = new TableViewSource(items);

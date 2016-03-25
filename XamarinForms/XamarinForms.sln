@@ -43,13 +43,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step4.Droid", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step4.WinPhone", "XamarinForms.Step4\XamarinForms.Step4.WinPhone\XamarinForms.Step4.WinPhone.csproj", "{B108AE5A-B9AC-4A94-96D5-FF894130DA0C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step1.UWP", "XamarinForms.Step1.UWP\XamarinForms.Step1.UWP.csproj", "{018142D0-5846-42C1-B246-C4337E84EDD7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step1.UWP", "XamarinForms.Step1\XamarinForms.Step1.UWP\XamarinForms.Step1.UWP.csproj", "{018142D0-5846-42C1-B246-C4337E84EDD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step2.UWP", "XamarinForms.Step2.UWP\XamarinForms.Step2.UWP.csproj", "{0A531A00-C660-43C2-8367-2D8263A94698}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step2.UWP", "XamarinForms.Step2\XamarinForms.Step2.UWP\XamarinForms.Step2.UWP.csproj", "{0A531A00-C660-43C2-8367-2D8263A94698}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step3.UWP", "XamarinForms.Step3.UWP\XamarinForms.Step3.UWP.csproj", "{1ACD01BB-50E0-4E1E-8F0A-13A157F0E017}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step3.UWP", "XamarinForms.Step3\XamarinForms.Step3.UWP\XamarinForms.Step3.UWP.csproj", "{1ACD01BB-50E0-4E1E-8F0A-13A157F0E017}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step4.UWP", "XamarinForms.Step4.UWP\XamarinForms.Step4.UWP.csproj", "{3A8B44C5-9E2F-4D65-9477-5FE9FADE0DA8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XamarinForms.Step4.UWP", "XamarinForms.Step4\XamarinForms.Step4.UWP\XamarinForms.Step4.UWP.csproj", "{3A8B44C5-9E2F-4D65-9477-5FE9FADE0DA8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

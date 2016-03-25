@@ -21,21 +21,21 @@ namespace ActivityState
 			SetContentView(Resource.Layout.Main);
 
 			Button button = FindViewById<Button>(Resource.Id.MyButton);
-			button.Click += delegate { button.Text = string.Format("{0} clicks!", count++); };
+			button.Click += delegate { button.Text = $"{count++} clicks!"; };
 
             //Restore instance state (if available)
             if (bundle != null)
             {
-                this.count = bundle.GetInt("count", 0);
-                button.Text = string.Format("{0} clicks!", this.count);
+                count = bundle.GetInt("count", 0);
+                button.Text = $"{count} clicks!";
             }
         }
 
-		protected override void OnSaveInstanceState(Bundle outState)
-		{
-			base.OnSaveInstanceState(outState);
-			outState.PutInt("count", this.count);
-		}
-	}
+        //protected override void OnSaveInstanceState(Bundle outState)
+        //{
+        //    base.OnSaveInstanceState(outState);
+        //    outState.PutInt("count", count);
+        //}
+    }
 }
 

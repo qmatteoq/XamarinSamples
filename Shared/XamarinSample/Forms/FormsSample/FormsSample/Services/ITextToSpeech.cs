@@ -1,7 +1,9 @@
-﻿namespace FormsSample.Services
+﻿using System.Threading.Tasks;
+
+namespace FormsSample.Services
 {
     public interface ITextToSpeech
     {
-        void Speak(string text);
+        Task Speak(string text);
     }
 }

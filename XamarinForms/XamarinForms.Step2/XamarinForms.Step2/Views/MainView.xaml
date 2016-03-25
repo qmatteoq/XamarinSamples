@@ -5,7 +5,8 @@
              x:Class="XamarinForms.Step2.Views.MainView">
 
   <Grid>
-    <ListView x:Name="CharactersList" RowHeight="300" SeparatorVisibility="None" ItemSelected="ListView_OnItemSelected">
+    <ListView x:Name="CharactersList" RowHeight="300" SeparatorVisibility="None" 
+              ItemSelected="ListView_OnItemSelected">
       <ListView.ItemTemplate>
         <DataTemplate>
           <ViewCell>

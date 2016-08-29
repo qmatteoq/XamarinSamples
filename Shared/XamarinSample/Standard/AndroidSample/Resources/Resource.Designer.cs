@@ -61,7 +61,7 @@ namespace AndroidSample
 		{
 			
 			// aapt resource value: 0x7f050000
-			public const int Comics = 2131034112;
+			public const int News = 2131034112;
 			
 			static Id()
 			{

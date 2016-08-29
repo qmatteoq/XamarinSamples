@@ -29,7 +29,7 @@ namespace AndroidSample
             
             List<string> items = list.Select(x => x.Title).ToList();
 
-            ListView listView = this.FindViewById<ListView>(Resource.Id.Comics);
+            ListView listView = this.FindViewById<ListView>(Resource.Id.News);
             listView.Adapter = new ArrayAdapter<string>(this, Android.Resource.Layout.SimpleListItem1, items);
         }
     }

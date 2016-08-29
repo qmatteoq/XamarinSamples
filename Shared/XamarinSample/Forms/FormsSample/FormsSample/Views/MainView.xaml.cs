@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using FormsSample.Services;
 using NewsLibrary.Models;
 using NewsLibrary.Services;
@@ -18,7 +16,7 @@ namespace FormsSample.Views
         protected override async void OnAppearing()
         {
             RssService service = new RssService();
-            string url = "http://blog.qmatteoq.com/feed";
+            string url = "https://blogs.windows.com/feed";
             IEnumerable<FeedItem> items = await service.GetNews(url);
             News.ItemsSource = items;
         }

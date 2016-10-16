@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<TabbedPage xmlns="http://xamarin.com/schemas/2014/forms"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:views1="clr-namespace:Step2.Views;assembly=Step2"
+            x:Class="Step2.Views.DetailView">
+
+    <TabbedPage.Children>
+        <views1:DescriptionView Title="Description" />
+        <views1:ComicsView Title="Comics" />
+    </TabbedPage.Children>
+  
+  <TabbedPage.ToolbarItems>
+    <ToolbarItem Text="Share" Order="Secondary" Clicked="OnShareItem" />
+  </TabbedPage.ToolbarItems>
+    
+</TabbedPage>

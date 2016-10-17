@@ -21,7 +21,7 @@ namespace Step2.Views
         {
             if (!isFirstLoad)
             {
-                LoadingIndicator.IsRunning = true;
+                IsBusy = true;
 
                 MarvelClient client = new MarvelClient(Constants.ApiKey, Constants.PrivateKey);
                 CharacterResponse response = await client.GetCharactersForSeriesAsync(1067);
@@ -29,7 +29,7 @@ namespace Step2.Views
                 ObservableCollection<Character> characters = new ObservableCollection<Character>(filteredList);
                 CharactersList.ItemsSource = characters;
 
-                LoadingIndicator.IsRunning = false;
+                IsBusy = false;
                 isFirstLoad = true;
             }
         }

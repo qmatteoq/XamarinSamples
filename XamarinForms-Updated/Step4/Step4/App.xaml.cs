@@ -1,19 +1,19 @@
-﻿using MarvelPortable.Model;
-using Step2.Views;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Step4.Views;
 using Xamarin.Forms;
 
-namespace Step2
+namespace Step4
 {
-
     public partial class App : Application
     {
-        public Character SelectedCharacter { get; set; }
-
         public App()
         {
             InitializeComponent();
 
-            MainPage = new NavigationPage(new MainView());
+            MainPage = new MainView();
         }
 
         protected override void OnStart()

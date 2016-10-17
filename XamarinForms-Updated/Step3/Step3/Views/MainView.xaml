@@ -1,21 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="Step2.Views.MainView">
-  
-    <ContentPage.Title>
-       <OnPlatform x:TypeArguments="x:String">
-          <OnPlatform.WinPhone>
-            Comics on Windows
-          </OnPlatform.WinPhone>
-          <OnPlatform.Android>
-            Comics on Android
-          </OnPlatform.Android>
-        </OnPlatform>
-    </ContentPage.Title>
+             x:Class="Step3.Views.MainView">
 
-  <Grid>
-    <ListView x:Name="CharactersList" RowHeight="300" SeparatorVisibility="None" ItemTapped="OnItemTapped">
+  <Grid x:Name="MainStack">
+    <ListView x:Name="CharactersList" RowHeight="300" SeparatorVisibility="None" >
       <ListView.ItemTemplate>
         <DataTemplate>
           <ViewCell>

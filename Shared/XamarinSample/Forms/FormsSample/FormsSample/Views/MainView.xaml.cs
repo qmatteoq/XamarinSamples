@@ -25,8 +25,8 @@ namespace FormsSample.Views
         {
             FeedItem item = e.SelectedItem as FeedItem;
 
-            ITextToSpeech textToSpeech = DependencyService.Get<ITextToSpeech>();
-            textToSpeech.Speak(item.Title);
+            IShareService shareService = DependencyService.Get<IShareService>();
+            shareService.Share(item.Title, item.Link);
         }
     }
 }

@@ -34,7 +34,7 @@ namespace WindowsSample
         protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             RssService service = new RssService();
-            string url = "https://blogs.windows.com/feed";
+            string url = "https://blogs.msdn.microsoft.com/appconsult/feed/";
             List<FeedItem> items = await service.GetNews(url);
             News.ItemsSource = items;
         }

@@ -24,7 +24,7 @@ namespace AndroidSample
             SetContentView(Resource.Layout.Main);
 
             RssService service = new RssService();
-            string url = "https://blogs.windows.com/feed";
+            string url = "https://blogs.msdn.microsoft.com/appconsult/feed/";
             List<FeedItem> list = await service.GetNews(url);
             
             List<string> items = list.Select(x => x.Title).ToList();

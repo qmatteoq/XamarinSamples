@@ -20,8 +20,7 @@ namespace NewsLibrary.Services
                     {
                         Title = (string)item.Element("title"),
                         Description = (string)item.Element("description"),
-                        Link = (string)item.Element("link"),
-                        PublishDate = DateTime.Parse((string)item.Element("pubDate"))
+                        Link = (string)item.Element("link")
                     }).ToList();
         }
     }

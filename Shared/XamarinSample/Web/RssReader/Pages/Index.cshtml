@@ -1,0 +1,16 @@
+﻿@page
+@model RssReader.Pages.IndexModel
+@{
+    ViewData["Title"] = "News";
+}
+
+<h2>News</h2>
+
+@foreach (var item in Model.NewsList) 
+{
+    <p>@item.Title</p>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
